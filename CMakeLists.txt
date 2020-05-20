@@ -1,7 +1,18 @@
-cmake_minimum_required(VERSION 3.10)
+CMAKE_MINIMUM_REQUIRED(VERSION 3.10)
 
 # set the project name
-project(BackToVulkan)
+PROJECT(BackToVulkan)
+
+
+SET(ENGINE_ROOT ${CMAKE_CURRENT_DIR})
+SET(CMAKE_RUNTIME_OUTPUT_DIRECTORY $<$<CONFIG:Debug>:${CMAKE_SOURCE_DIR}/bin>)
+SET_PROPERTY(DIRECTORY APPEND PROPERTY COMPILE_DEFINITIONS GLEW_STATIC)
+
 
 # add the executable
-add_executable(BackToVulkan main.cpp)
+ADD_SUBDIRECTORY(exts)
+ADD_EXECUTABLE(BackToVulkan main.cpp)
+ADD_DEPENDENCIES(BackToVulkan exts)
+
+
+TARGET_LINK_LIBRARIES(BackToVulkan PUBLIC exts)

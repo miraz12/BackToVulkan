@@ -1,0 +1,3 @@
+[submodule "exts/glfw"]
+	path = exts/glfw
+	url = https://github.com/glfw/glfw.git
