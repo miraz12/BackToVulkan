@@ -42,5 +42,5 @@ namespace Display
 	{
 		glfwSwapBuffers(window);
 	}
-};
+}
 
