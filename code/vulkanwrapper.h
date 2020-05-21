@@ -11,7 +11,7 @@ namespace Render
 	public:
 		VulkanWrapper() {};
 		VulkanWrapper(Display::Window* win);
-		~VulkanWrapper() {};
+		~VulkanWrapper() = default;
 
 		void InitVulkan();
 		void SetupDebugMessenger();
@@ -24,8 +24,8 @@ namespace Render
 		VkDebugUtilsMessengerEXT debugMessenger;
 
 		void CreateInstance();
-		bool checkValidationLayerSupport();
-		std::vector<const char*> getRequiredExtensions();
+		bool CheckValidationLayerSupport();
+		std::vector<const char*> GetRequiredExtensions();
 
 		
 	};

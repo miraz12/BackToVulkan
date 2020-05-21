@@ -11,11 +11,6 @@ namespace Display
 		//empty
 	}
 
-	Window::~Window()
-	{
-		//empty
-	}
-
 	bool Window::Open()
 	{
 		if (windowCount == 0)

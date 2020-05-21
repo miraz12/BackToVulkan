@@ -10,7 +10,7 @@ namespace Display
 		/// constructor
 		Window();
 		/// destructor
-		~Window();
+		~Window() = default;
 		/// open window
 		bool Open();
 		/// close window
@@ -20,7 +20,7 @@ namespace Display
 		/// swap buffers at end of frame
 		void SwapBuffers();
 
-		///Get requiered extensions TODO: keep this or pass directly to vulkan wrapper?
+		///Get required extensions TODO: keep this or pass directly to vulkan wrapper?
 		 const char** GetRequiredExtensions(uint32_t* count);
 		
 		GLFWwindow* window;
