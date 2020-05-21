@@ -1,5 +1,6 @@
 #include "vulkanwrapper.h"
 #include <stdexcept>
+#include <optional>
 
 const std::vector<const char*> validationLayers = {
 "VK_LAYER_KHRONOS_validation"
@@ -66,6 +67,7 @@ namespace Render
 	{
 		CreateInstance();
 		SetupDebugMessenger();
+		PickPhysicalDevice();
 	}
 
 	void VulkanWrapper::Cleanup()
@@ -186,5 +188,57 @@ namespace Render
 			| VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT;
 		createInfo.pfnUserCallback = DebugCallback;
 	}
+
+	bool VulkanWrapper::IsDeviceSuitable(VkPhysicalDevice device)
+	{
+		device;
+		//TODO: Implement som gpu choosing algorithm.
+		/*VkPhysicalDeviceProperties deviceProperties;
+		vkGetPhysicalDeviceProperties(device, &deviceProperties);
+
+		VkPhysicalDeviceFeatures deviceFeatures;
+		vkGetPhysicalDeviceFeatures(device, &deviceFeatures);
+		*/
+		
+		return true;
+	}
+
+	VulkanWrapper::QueueFamilyIndices VulkanWrapper::FindQueueFamilies()
+	{
+			QueueFamilyIndices indices = {0};
+			// Logic to find queue family indices to populate struct with
+
+			std::optional<uint32_t> graphicsFamily;
+		
+			return indices;
+	}
+
+	void VulkanWrapper::PickPhysicalDevice()
+	{
+		uint32_t deviceCount = 0;
+		vkEnumeratePhysicalDevices(instance, &deviceCount, nullptr);
+		if (deviceCount == 0) 
+		{
+			throw std::runtime_error("failed to find GPUs with Vulkan support!");
+		}
+
+		std::vector<VkPhysicalDevice> devices(deviceCount);
+		vkEnumeratePhysicalDevices(instance, &deviceCount, devices.data());
+
+		for (const auto& device : devices) 
+		{
+			if (IsDeviceSuitable(device)) 
+			{
+				physicalDevice = device;
+				break;
+			}
+		}
+
+		if (physicalDevice == VK_NULL_HANDLE) 
+		{
+			throw std::runtime_error("failed to find a suitable GPU!");
+		}
+	}
+
 
 }
