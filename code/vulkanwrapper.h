@@ -1,5 +1,8 @@
 #include <vulkan/vulkan.h>
 #include <vector>
+#include <iostream>
+
+#include "window.h"
 
 namespace Render
 {
@@ -7,20 +10,23 @@ namespace Render
 	{
 	public:
 		VulkanWrapper() {};
-		VulkanWrapper(uint32_t extensionCount, const char** extensions) : 
-			glfwExtensionCount(extensionCount), glfwExtensions(extensions) {};
+		VulkanWrapper(Display::Window* win);
 		~VulkanWrapper() {};
 
 		void InitVulkan();
+		void SetupDebugMessenger();
+		void PopulateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT & createInfo);
 		void Cleanup();
 
 	private:
+		Display::Window* window;
 		VkInstance instance;
-		uint32_t glfwExtensionCount{0};
-		const char** glfwExtensions;
+		VkDebugUtilsMessengerEXT debugMessenger;
 
 		void CreateInstance();
 		bool checkValidationLayerSupport();
 		std::vector<const char*> getRequiredExtensions();
+
+		
 	};
 }

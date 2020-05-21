@@ -2,7 +2,6 @@
 #include <cstdlib>
 #include <iostream>
 
-#include "window.h"
 #include "vulkanwrapper.h"
 
 
@@ -13,13 +12,7 @@ public:
 		win = new Display::Window();
 		win->Open();
 
-		uint32_t glfwExtensionCount = 0;
-		const char** glfwExtensions;
-
-		glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
-
-
-		instance = new Render::VulkanWrapper(glfwExtensionCount, glfwExtensions);
+		instance = new Render::VulkanWrapper(win);
 		instance->InitVulkan();
 	}
 

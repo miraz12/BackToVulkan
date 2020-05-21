@@ -19,6 +19,9 @@ namespace Display
 		void Update();
 		/// swap buffers at end of frame
 		void SwapBuffers();
+
+		///Get requiered extensions TODO: keep this or pass directly to vulkan wrapper?
+		 const char** GetRequiredExtensions(uint32_t* count);
 		
 		GLFWwindow* window;
 

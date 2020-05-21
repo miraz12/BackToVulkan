@@ -42,5 +42,10 @@ namespace Display
 	{
 		glfwSwapBuffers(window);
 	}
+	const char** Window::GetRequiredExtensions(uint32_t* count)
+	{
+
+		return glfwGetRequiredInstanceExtensions(count);
+	}
 }
 
