@@ -37,7 +37,7 @@ namespace Render
 		void PopulateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT & createInfo);
 		bool IsDeviceSuitable(VkPhysicalDevice device);
 		void PickPhysicalDevice();
-		QueueFamilyIndices FindQueueFamilies();
+		QueueFamilyIndices FindQueueFamilies(VkPhysicalDevice device);
 		
 
 		

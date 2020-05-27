@@ -6,6 +6,11 @@ const std::vector<const char*> validationLayers = {
 "VK_LAYER_KHRONOS_validation"
 };
 
+struct QueueFamilyIndices
+{
+	std::optional<uint32_t> graphicsFamily;
+};
+
 #ifdef NDEBUG
 const bool enableValidationLayers = false;
 #else
@@ -14,13 +19,13 @@ const bool enableValidationLayers = true;
 
 namespace Render
 {
-	//TODO: Maybe move this stuff to seperate file? One file for all extension functions and callbacks maybe? 
+	//TODO: Maybe move this stuff to separate file? One file for all extension functions and callbacks maybe? 
 	VkResult CreateDebugUtilsMessengerEXT(VkInstance instance,
 		const VkDebugUtilsMessengerCreateInfoEXT* pCreateInfo, const VkAllocationCallbacks* pAllocator,
 		VkDebugUtilsMessengerEXT* pDebugMessenger) 
 	{
-		auto func = (PFN_vkCreateDebugUtilsMessengerEXT)vkGetInstanceProcAddr(instance, 
-			"vkCreateDebugUtilsMessengerEXT");
+		auto func = reinterpret_cast<PFN_vkCreateDebugUtilsMessengerEXT>(
+			vkGetInstanceProcAddr(instance,		                                                                                       "vkCreateDebugUtilsMessengerEXT"));
 
 		if (func != nullptr) 
 		{
@@ -35,8 +40,8 @@ namespace Render
 	void DestroyDebugUtilsMessengerEXT(VkInstance instance, VkDebugUtilsMessengerEXT debugMessenger,
 		const VkAllocationCallbacks* pAllocator) 
 	{
-		auto func = (PFN_vkDestroyDebugUtilsMessengerEXT)vkGetInstanceProcAddr(instance, 
-			"vkDestroyDebugUtilsMessengerEXT");
+		auto func = reinterpret_cast<PFN_vkDestroyDebugUtilsMessengerEXT>(
+			vkGetInstanceProcAddr(instance,		                                                                                        "vkDestroyDebugUtilsMessengerEXT"));
 		if (func != nullptr) 
 		{
 			func(instance, debugMessenger, pAllocator);
@@ -49,7 +54,7 @@ namespace Render
 		const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData,
 		void* pUserData) 
 	{
-		messageSeverity; messageType; pUserData; //TODO: Unsued parameters, doing this to avoid warnings
+		messageSeverity; messageType; pUserData; //TODO: Unused parameters, doing this to avoid warnings
 
 		std::cerr << "validation layer: " << pCallbackData->pMessage << std::endl;
 
@@ -58,7 +63,7 @@ namespace Render
 
 
 	VulkanWrapper::VulkanWrapper(Display::Window* win) :
-		window(win), instance(nullptr), debugMessenger(nullptr)
+		window(win), instance(nullptr), debugMessenger(NULL)
 	{
 		//Empty
 	};
