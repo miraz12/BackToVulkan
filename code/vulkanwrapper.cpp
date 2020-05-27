@@ -1,14 +1,10 @@
 #include "vulkanwrapper.h"
+#include <iostream>
 #include <stdexcept>
-#include <optional>
+#include <set>
 
 const std::vector<const char*> validationLayers = {
 "VK_LAYER_KHRONOS_validation"
-};
-
-struct QueueFamilyIndices
-{
-	std::optional<uint32_t> graphicsFamily;
 };
 
 #ifdef NDEBUG
@@ -25,7 +21,8 @@ namespace Render
 		VkDebugUtilsMessengerEXT* pDebugMessenger) 
 	{
 		auto func = reinterpret_cast<PFN_vkCreateDebugUtilsMessengerEXT>(
-			vkGetInstanceProcAddr(instance,		                                                                                       "vkCreateDebugUtilsMessengerEXT"));
+			vkGetInstanceProcAddr(instance,	
+				"vkCreateDebugUtilsMessengerEXT"));
 
 		if (func != nullptr) 
 		{
@@ -41,7 +38,8 @@ namespace Render
 		const VkAllocationCallbacks* pAllocator) 
 	{
 		auto func = reinterpret_cast<PFN_vkDestroyDebugUtilsMessengerEXT>(
-			vkGetInstanceProcAddr(instance,		                                                                                        "vkDestroyDebugUtilsMessengerEXT"));
+			vkGetInstanceProcAddr(instance,
+				"vkDestroyDebugUtilsMessengerEXT"));
 		if (func != nullptr) 
 		{
 			func(instance, debugMessenger, pAllocator);
@@ -63,7 +61,7 @@ namespace Render
 
 
 	VulkanWrapper::VulkanWrapper(Display::Window* win) :
-		window(win), instance(nullptr), debugMessenger(NULL)
+		windowPtr(win), instance(nullptr), debugMessenger(NULL)
 	{
 		//Empty
 	};
@@ -72,15 +70,19 @@ namespace Render
 	{
 		CreateInstance();
 		SetupDebugMessenger();
+		CreateSurface();
 		PickPhysicalDevice();
+		CreateLogicalDevice();
 	}
 
 	void VulkanWrapper::Cleanup()
 	{
+		vkDestroyDevice(vDevice, nullptr);
 		if (enableValidationLayers) 
 		{
 			DestroyDebugUtilsMessengerEXT(instance, debugMessenger, nullptr);
 		}
+		vkDestroySurfaceKHR(instance, surface, nullptr);
 		vkDestroyInstance(instance, nullptr);
 	}
 
@@ -158,7 +160,7 @@ namespace Render
 	std::vector<const char*> VulkanWrapper::GetRequiredExtensions()
 	{
 		uint32_t glfwExtensionCount = 0;
-		const char** glfwExtensions = glfwExtensions = window->GetRequiredExtensions(&glfwExtensionCount);
+		const char** glfwExtensions = glfwExtensions = windowPtr->GetRequiredExtensions(&glfwExtensionCount);
 
 		std::vector<const char*> extensions(glfwExtensions, glfwExtensions + glfwExtensionCount);
 
@@ -196,24 +198,40 @@ namespace Render
 
 	bool VulkanWrapper::IsDeviceSuitable(VkPhysicalDevice device)
 	{
-		device;
-		//TODO: Implement som gpu choosing algorithm.
-		/*VkPhysicalDeviceProperties deviceProperties;
-		vkGetPhysicalDeviceProperties(device, &deviceProperties);
-
-		VkPhysicalDeviceFeatures deviceFeatures;
-		vkGetPhysicalDeviceFeatures(device, &deviceFeatures);
-		*/
-		
-		return true;
+		QueueFamilyIndices indices = FindQueueFamilies(device);
+		return indices.isComplete();
 	}
 
-	VulkanWrapper::QueueFamilyIndices VulkanWrapper::FindQueueFamilies()
+	VulkanWrapper::QueueFamilyIndices VulkanWrapper::FindQueueFamilies(VkPhysicalDevice device)
 	{
 			QueueFamilyIndices indices = {0};
 			// Logic to find queue family indices to populate struct with
+			uint32_t queueFamilyCount = 0;
+			vkGetPhysicalDeviceQueueFamilyProperties(device, &queueFamilyCount, nullptr);
 
-			std::optional<uint32_t> graphicsFamily;
+			std::vector<VkQueueFamilyProperties> queueFamilies(queueFamilyCount);
+			vkGetPhysicalDeviceQueueFamilyProperties(device, &queueFamilyCount, queueFamilies.data());
+		
+			int i = 0;
+			for (const auto& queueFamily : queueFamilies) 
+			{
+				if (queueFamily.queueFlags & VK_QUEUE_GRAPHICS_BIT) 
+				{
+					indices.graphicsFamily = i;
+				}
+				
+				VkBool32 presentSupport = false;
+				vkGetPhysicalDeviceSurfaceSupportKHR(device, i, surface, &presentSupport);
+				if (presentSupport) 
+				{
+					indices.presentFamily = i;
+				}
+				if (indices.isComplete()) 
+				{
+					break;
+				}
+				i++;
+			}
 		
 			return indices;
 	}
@@ -245,5 +263,57 @@ namespace Render
 		}
 	}
 
+	void VulkanWrapper::CreateLogicalDevice()
+	{
+		QueueFamilyIndices indices = FindQueueFamilies(physicalDevice);
 
+		std::vector<VkDeviceQueueCreateInfo> queueCreateInfos;
+		std::set<uint32_t> uniqueQueueFamilies = { indices.graphicsFamily.value(), indices.presentFamily.value() };
+
+		float queuePriority = 1.0f;
+		for (uint32_t queueFamily : uniqueQueueFamilies) 
+		{
+			VkDeviceQueueCreateInfo queueCreateInfo{};
+			queueCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
+			queueCreateInfo.queueFamilyIndex = queueFamily;
+			queueCreateInfo.queueCount = 1;
+			queueCreateInfo.pQueuePriorities = &queuePriority;
+			queueCreateInfos.push_back(queueCreateInfo);
+		}
+		
+		VkPhysicalDeviceFeatures deviceFeatures{};
+
+		VkDeviceCreateInfo createInfo{};
+		createInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
+		createInfo.pQueueCreateInfos = queueCreateInfos.data();
+		createInfo.queueCreateInfoCount = static_cast<uint32_t>(queueCreateInfos.size());
+
+		createInfo.pEnabledFeatures = &deviceFeatures;
+		createInfo.enabledExtensionCount = 0;
+
+		if (enableValidationLayers) 
+		{
+			createInfo.enabledLayerCount = static_cast<uint32_t>(validationLayers.size());
+			createInfo.ppEnabledLayerNames = validationLayers.data();
+		}
+		else 
+		{
+			createInfo.enabledLayerCount = 0;
+		}
+		if (vkCreateDevice(physicalDevice, &createInfo, nullptr, &vDevice) != VK_SUCCESS)
+		{
+			throw std::runtime_error("failed to create logical device!");
+		}
+
+		vkGetDeviceQueue(vDevice, indices.graphicsFamily.value(), 0, &graphicsQueue);
+		vkGetDeviceQueue(vDevice, indices.presentFamily.value(), 0, &presentQueue);
+	}
+
+	void VulkanWrapper::CreateSurface()
+	{
+		if (glfwCreateWindowSurface(instance, windowPtr->window, nullptr, &surface) != VK_SUCCESS) 
+		{
+			throw std::runtime_error("failed to create window surface!");
+		}
+	}
 }

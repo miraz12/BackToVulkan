@@ -1,6 +1,6 @@
 #include <vulkan/vulkan.h>
 #include <vector>
-#include <iostream>
+#include <optional>
 
 #include "window.h"
 
@@ -17,17 +17,31 @@ namespace Render
 		void Cleanup();
 
 	private:
-		//GLFW window
-		Display::Window* window;
+		//GLFW windowPtr pointer
+		Display::Window* windowPtr;
 		//Vulkan instance
 		VkInstance instance;
+		//Vulkan surface
+		VkSurfaceKHR surface;
+		//Vulkan device
+		VkDevice vDevice;
+		//Vulkan graphics queue
+		VkQueue graphicsQueue;
+		//Vulkan presentation queue
+		VkQueue presentQueue;
 		//Debug messenger callback function
 		VkDebugUtilsMessengerEXT debugMessenger;
 		//Physical gpu device TODO: Let device be its own class?		
 		VkPhysicalDevice physicalDevice = VK_NULL_HANDLE;
 
-		struct QueueFamilyIndices {
-			uint32_t graphicsFamily;
+		struct QueueFamilyIndices
+		{
+			std::optional<uint32_t> graphicsFamily;
+			std::optional<uint32_t> presentFamily;
+			bool isComplete()
+			{
+				return graphicsFamily.has_value() && presentFamily.has_value();
+			}
 		};
 
 		void CreateInstance();
@@ -38,8 +52,9 @@ namespace Render
 		bool IsDeviceSuitable(VkPhysicalDevice device);
 		void PickPhysicalDevice();
 		QueueFamilyIndices FindQueueFamilies(VkPhysicalDevice device);
+		void CreateLogicalDevice();
+		void CreateSurface();
 		
-
 		
 	};
 }
