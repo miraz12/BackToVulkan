@@ -44,6 +44,13 @@ namespace Render
 			}
 		};
 
+		struct SwapChainSupportDetails
+		{
+			VkSurfaceCapabilitiesKHR capabilities;
+			std::vector<VkSurfaceFormatKHR> formats;
+			std::vector<VkPresentModeKHR> presentModes;
+		};
+
 		void CreateInstance();
 		bool CheckValidationLayerSupport();
 		std::vector<const char*> GetRequiredExtensions();
@@ -54,7 +61,8 @@ namespace Render
 		QueueFamilyIndices FindQueueFamilies(VkPhysicalDevice device);
 		void CreateLogicalDevice();
 		void CreateSurface();
-		
+		bool CheckDeviceExtensionSupport(VkPhysicalDevice device);
+		SwapChainSupportDetails querySwapChainSupport(VkPhysicalDevice device);
 		
 	};
 }

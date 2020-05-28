@@ -3,8 +3,13 @@
 #include <stdexcept>
 #include <set>
 
-const std::vector<const char*> validationLayers = {
-"VK_LAYER_KHRONOS_validation"
+const std::vector<const char*> validationLayers = 
+{
+	"VK_LAYER_KHRONOS_validation"
+};
+const std::vector<const char*> deviceExtensions = 
+{
+	VK_KHR_SWAPCHAIN_EXTENSION_NAME
 };
 
 #ifdef NDEBUG
@@ -196,10 +201,55 @@ namespace Render
 		createInfo.pfnUserCallback = DebugCallback;
 	}
 
+	bool VulkanWrapper::CheckDeviceExtensionSupport(VkPhysicalDevice device)
+	{
+		uint32_t extensionCount;
+		vkEnumerateDeviceExtensionProperties(device, nullptr, &extensionCount, nullptr);
+
+		std::vector<VkExtensionProperties> availableExtensions(extensionCount);
+		vkEnumerateDeviceExtensionProperties(device, nullptr, &extensionCount, availableExtensions.data());
+
+		std::set<std::string> requiredExtensions(deviceExtensions.begin(), deviceExtensions.end());
+
+		for (const auto& extension : availableExtensions) 
+		{
+			requiredExtensions.erase(extension.extensionName);
+		}
+
+		return requiredExtensions.empty();
+	}
+
+	VulkanWrapper::SwapChainSupportDetails VulkanWrapper::querySwapChainSupport(VkPhysicalDevice device)
+	{
+		SwapChainSupportDetails details;
+		vkGetPhysicalDeviceSurfaceCapabilitiesKHR(device, surface, &details.capabilities);
+
+		uint32_t formatCount;
+		vkGetPhysicalDeviceSurfaceFormatsKHR(device, surface, &formatCount, nullptr);
+
+		if (formatCount != 0) 
+		{
+			details.formats.resize(formatCount);
+			vkGetPhysicalDeviceSurfaceFormatsKHR(device, surface, &formatCount, details.formats.data());
+		}
+		
+		return details;
+	}
+
 	bool VulkanWrapper::IsDeviceSuitable(VkPhysicalDevice device)
 	{
 		QueueFamilyIndices indices = FindQueueFamilies(device);
-		return indices.isComplete();
+
+		bool extensionsSupported = CheckDeviceExtensionSupport(device);
+
+		bool swapChainAdequate = false;
+		if (extensionsSupported) 
+		{
+			SwapChainSupportDetails swapChainSupport = querySwapChainSupport(device);
+			swapChainAdequate = !swapChainSupport.formats.empty() && !swapChainSupport.presentModes.empty();
+		}
+		
+		return indices.isComplete() && extensionsSupported && swapChainAdequate;
 	}
 
 	VulkanWrapper::QueueFamilyIndices VulkanWrapper::FindQueueFamilies(VkPhysicalDevice device)
@@ -289,7 +339,8 @@ namespace Render
 		createInfo.queueCreateInfoCount = static_cast<uint32_t>(queueCreateInfos.size());
 
 		createInfo.pEnabledFeatures = &deviceFeatures;
-		createInfo.enabledExtensionCount = 0;
+		createInfo.enabledExtensionCount = static_cast<uint32_t>(deviceExtensions.size());
+		createInfo.ppEnabledExtensionNames = deviceExtensions.data();
 
 		if (enableValidationLayers) 
 		{
@@ -316,4 +367,21 @@ namespace Render
 			throw std::runtime_error("failed to create window surface!");
 		}
 	}
+
+
+	VkSurfaceFormatKHR VulkanWrapper::ChooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats)
+	{
+		for (const auto& availableFormat : availableFormats) 
+		{
+			if (availableFormat.format == VK_FORMAT_B8G8R8A8_SRGB && availableFormat.colorSpace == VK_COLOR_SPACE_SRGB_NONLINEAR_KHR) 
+			{
+				return availableFormat;
+			}
+		}
+
+		return availableFormats[0];
+		
+	}
+
+
 }
