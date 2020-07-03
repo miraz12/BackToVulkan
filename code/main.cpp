@@ -2,7 +2,8 @@
 #include <cstdlib>
 #include <iostream>
 
-#include "vulkanwrapper.h"
+#include "vulkaninstance.h"
+#include "graphicspipeline.h"
 
 
 class RenderApplication {
@@ -12,8 +13,9 @@ public:
 		win = new Display::Window();
 		win->Open();
 
-		instance = new Render::VulkanWrapper(win);
+		instance = new Render::VulkanInstance(win);
 		instance->InitVulkan();
+		pipeLine = new Render::GraphicsPipeline(instance);
 	}
 
 	void Run()
@@ -34,7 +36,8 @@ public:
 
 private:
 	
-	Render::VulkanWrapper* instance;
+	Render::VulkanInstance* instance;
+	Render::GraphicsPipeline* pipeLine;
 	Display::Window* win;
 
 };

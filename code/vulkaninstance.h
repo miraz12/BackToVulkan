@@ -1,22 +1,37 @@
 #include <vulkan/vulkan.h>
 #include <vector>
 #include <optional>
+#include <string>
 
 #include "window.h"
 
 namespace Render
 {
-	class VulkanWrapper
+	struct SwapChainVars
+	{
+		//Vulkan swap chain
+		VkSwapchainKHR swapChain;
+		//Vulkan swap chain images
+		std::vector<VkImage> swapChainImages;
+		//Vulkan swap chain image format
+		VkFormat swapChainImageFormat;
+		//Vulkan swap chain extent
+		VkExtent2D swapChainExtent;
+		//Vulkan image views
+		std::vector<VkImageView> swapChainImageViews;
+	};
+
+	class VulkanInstance
 	{
 	public:
-		VulkanWrapper() {};
-		VulkanWrapper(Display::Window* win);
-		~VulkanWrapper() = default;
+		VulkanInstance(){};
+		VulkanInstance(Display::Window* win);
+		~VulkanInstance() = default;
 
 		void InitVulkan();
 		void Cleanup();
+		
 
-	private:
 		//GLFW windowPtr pointer
 		Display::Window* windowPtr;
 		//Vulkan instance
@@ -33,16 +48,10 @@ namespace Render
 		VkDebugUtilsMessengerEXT debugMessenger;
 		//Physical gpu device TODO: Let device be its own class?		
 		VkPhysicalDevice physicalDevice = VK_NULL_HANDLE;
-		//Vulkan swap chain
-		VkSwapchainKHR swapChain;
-		//Vulkan swap chain images
-		std::vector<VkImage> swapChainImages;
-		//Vulkan swap chain image format
-		VkFormat swapChainImageFormat;
-		//Vulkan swap chain extent
-		VkExtent2D swapChainExtent;
-		//Vulkan image views
-		std::vector<VkImageView> swapChainImageViews;
+
+		SwapChainVars swapChain;
+
+	private:
 
 		struct QueueFamilyIndices
 		{
@@ -78,6 +87,5 @@ namespace Render
 		VkExtent2D ChooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities);
 		void CreateSwapChain();
 		void CreateImageViews();
-		void createGraphicsPipeline();
 	};
 }

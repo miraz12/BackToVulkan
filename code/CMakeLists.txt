@@ -13,3 +13,4 @@ ADD_EXECUTABLE(example ${files_project})
 
 ADD_DEPENDENCIES(example exts)
 TARGET_LINK_LIBRARIES(example PUBLIC exts)
+set_property(TARGET example PROPERTY VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}")
