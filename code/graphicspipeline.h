@@ -1,23 +1,24 @@
 #include "shaderobject.h"
+#include "vulkaninstance.h"
 
 
 namespace Render
 {
 	struct SwapChainVars;
-	class VulkanInstance; 
-
 	class GraphicsPipeline
 	{
 	public:
 		GraphicsPipeline() {};
 		GraphicsPipeline(VulkanInstance* vkInstance);
 		~GraphicsPipeline();
+		void Cleanup();
 
 	private:
 
 		void CreateRenderPass();
 		void CreateFramebuffers();
-		void createCommandPool();
+		void CreateCommandPool();
+		void CreateCommandBuffers();
 
 		//Vulkan instance
 		VulkanInstance* vkInstance;
@@ -31,5 +32,7 @@ namespace Render
 		std::vector<VkFramebuffer> swapChainFramebuffers;
 		//Vulkan command pool
 		VkCommandPool commandPool;
+		//Vulkan command buffers
+		std::vector<VkCommandBuffer> commandBuffers;
 	};
 }

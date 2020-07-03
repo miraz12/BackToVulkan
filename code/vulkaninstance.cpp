@@ -274,7 +274,7 @@ namespace Render
 		return indices.isComplete() && extensionsSupported && swapChainAdequate;
 	}
 
-	VulkanInstance::QueueFamilyIndices VulkanInstance::FindQueueFamilies(VkPhysicalDevice device)
+	QueueFamilyIndices VulkanInstance::FindQueueFamilies(VkPhysicalDevice device)
 	{
 			QueueFamilyIndices indices = {0};
 			// Logic to find queue family indices to populate struct with

@@ -2,7 +2,6 @@
 #include <cstdlib>
 #include <iostream>
 
-#include "vulkaninstance.h"
 #include "graphicspipeline.h"
 
 
@@ -15,7 +14,7 @@ public:
 
 		instance = new Render::VulkanInstance(win);
 		instance->InitVulkan();
-		pipeLine = new Render::GraphicsPipeline(instance);
+		pipeline = new Render::GraphicsPipeline(instance);
 	}
 
 	void Run()
@@ -30,6 +29,7 @@ public:
 
 	void Close()
 	{
+		pipeline->Cleanup();
 		instance->Cleanup();
 		win->Close();
 	}
@@ -37,7 +37,7 @@ public:
 private:
 	
 	Render::VulkanInstance* instance;
-	Render::GraphicsPipeline* pipeLine;
+	Render::GraphicsPipeline* pipeline;
 	Display::Window* win;
 
 };

@@ -21,6 +21,16 @@ namespace Render
 		std::vector<VkImageView> swapChainImageViews;
 	};
 
+	struct QueueFamilyIndices
+	{
+		std::optional<uint32_t> graphicsFamily;
+		std::optional<uint32_t> presentFamily;
+		bool isComplete()
+		{
+			return graphicsFamily.has_value() && presentFamily.has_value();
+		}
+	};
+
 	class VulkanInstance
 	{
 	public:
@@ -30,6 +40,7 @@ namespace Render
 
 		void InitVulkan();
 		void Cleanup();
+		QueueFamilyIndices FindQueueFamilies(VkPhysicalDevice device);
 		
 
 		//GLFW windowPtr pointer
@@ -48,20 +59,11 @@ namespace Render
 		VkDebugUtilsMessengerEXT debugMessenger;
 		//Physical gpu device TODO: Let device be its own class?		
 		VkPhysicalDevice physicalDevice = VK_NULL_HANDLE;
-
+		//Vulkan swap chain info
 		SwapChainVars swapChain;
 
-	private:
 
-		struct QueueFamilyIndices
-		{
-			std::optional<uint32_t> graphicsFamily;
-			std::optional<uint32_t> presentFamily;
-			bool isComplete()
-			{
-				return graphicsFamily.has_value() && presentFamily.has_value();
-			}
-		};
+	private:
 
 		struct SwapChainSupportDetails
 		{
@@ -77,7 +79,6 @@ namespace Render
 		void PopulateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT & createInfo);
 		bool IsDeviceSuitable(VkPhysicalDevice device);
 		void PickPhysicalDevice();
-		QueueFamilyIndices FindQueueFamilies(VkPhysicalDevice device);
 		void CreateLogicalDevice();
 		void CreateSurface();
 		bool CheckDeviceExtensionSupport(VkPhysicalDevice device);
