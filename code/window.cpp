@@ -60,7 +60,14 @@ namespace Display
 	}
 	void Window::RecreateSwapChain()
 	{
+		width = 0;
+		height = 0;
 		glfwGetFramebufferSize(window, &width, &height);
+		while (width == 0 || height == 0) //Minimized, wait for maximization
+		{
+			glfwGetFramebufferSize(window, &width, &height);
+			glfwWaitEvents();
+		}
 		instance->RecreateSwapChain();
 		pipeline->RecreateSwapChain();
 	}
