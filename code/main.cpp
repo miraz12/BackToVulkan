@@ -2,8 +2,7 @@
 #include <cstdlib>
 #include <iostream>
 
-#include "graphicspipeline.h"
-
+#include "window.h"
 
 class RenderApplication {
 public:
@@ -11,10 +10,6 @@ public:
 	{
 		win = new Display::Window();
 		win->Open();
-
-		instance = new Render::VulkanInstance(win);
-		instance->InitVulkan();
-		pipeline = new Render::GraphicsPipeline(instance);
 	}
 
 	void Run()
@@ -29,17 +24,13 @@ public:
 
 	void Close()
 	{
-		pipeline->Cleanup();
-		instance->Cleanup();
+		
 		win->Close();
 	}
 
 private:
 	
-	Render::VulkanInstance* instance;
-	Render::GraphicsPipeline* pipeline;
 	Display::Window* win;
-
 };
 
 int main()

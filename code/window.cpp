@@ -1,12 +1,17 @@
 #include "window.h"
+#include "graphicspipeline.h"
+
+
 
 namespace Display
 {
+	
+
 	Window::Window() :
 		window(nullptr),
 		width(1920),
 		height(1080),
-		title("Render window")
+		title("Vulkan window")
 	{
 		//empty
 	}
@@ -18,12 +23,21 @@ namespace Display
 
 		glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
 		window = glfwCreateWindow(width, height, title, nullptr, nullptr);
+		glfwSetWindowUserPointer(window, this);
+		glfwSetFramebufferSizeCallback(window, framebufferResizeCallback);
+
+
+		instance = new Render::VulkanInstance(this);
+		instance->InitVulkan();
+		pipeline = new Render::GraphicsPipeline(instance);
 
 		return true;
 	}
 
 	void Window::Close()
 	{
+		pipeline->Cleanup();
+		instance->Cleanup();
 		glfwDestroyWindow(window);
 		glfwTerminate();
 	}
@@ -31,16 +45,29 @@ namespace Display
 	void Window::Update()
 	{
 		glfwPollEvents();
+		if (frambufferResize)
+		{
+			RecreateSwapChain();
+			frambufferResize = false;
+		}
+
+		pipeline->DrawFrame();
 	}
 
 	void Window::SwapBuffers()
 	{
 		glfwSwapBuffers(window);
 	}
+	void Window::RecreateSwapChain()
+	{
+		glfwGetFramebufferSize(window, &width, &height);
+		instance->RecreateSwapChain();
+		pipeline->RecreateSwapChain();
+	}
 	const char** Window::GetRequiredExtensions(uint32_t* count)
 	{
-
 		return glfwGetRequiredInstanceExtensions(count);
 	}
+
 }
 

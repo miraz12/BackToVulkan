@@ -3,7 +3,10 @@
 #include <optional>
 #include <string>
 
-#include "window.h"
+namespace Display
+{
+	class Window;
+}
 
 namespace Render
 {
@@ -39,6 +42,7 @@ namespace Render
 		~VulkanInstance() = default;
 
 		void InitVulkan();
+		void RecreateSwapChain();
 		void Cleanup();
 		QueueFamilyIndices FindQueueFamilies(VkPhysicalDevice device);
 		
@@ -61,6 +65,8 @@ namespace Render
 		VkPhysicalDevice physicalDevice = VK_NULL_HANDLE;
 		//Vulkan swap chain info
 		SwapChainVars swapChain;
+
+
 
 
 	private:
@@ -88,5 +94,7 @@ namespace Render
 		VkExtent2D ChooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities);
 		void CreateSwapChain();
 		void CreateImageViews();
+		void CleanupSwapChain();
+
 	};
 }

@@ -6,8 +6,7 @@
 #include <algorithm>
 #include <fstream>
 
-const int WIDTH = 800;
-const int HEIGHT = 800;
+#include "window.h"
 
 const std::vector<const char*> validationLayers = 
 {
@@ -88,13 +87,26 @@ namespace Render
 		CreateImageViews();
 	}
 
-	void VulkanInstance::Cleanup()
+	void VulkanInstance::RecreateSwapChain()
+	{
+		vkDeviceWaitIdle(vDevice);
+		CleanupSwapChain();
+		CreateSwapChain();
+		CreateImageViews();
+	}
+
+	void VulkanInstance::CleanupSwapChain()
 	{
 		for (auto imageView : swapChain.swapChainImageViews)
 		{
 			vkDestroyImageView(vDevice, imageView, nullptr);
 		}
 		vkDestroySwapchainKHR(vDevice, swapChain.swapChain, nullptr);
+	}
+
+	void VulkanInstance::Cleanup()
+	{
+		CleanupSwapChain();
 		vkDestroyDevice(vDevice, nullptr);
 		if (enableValidationLayers) 
 		{
@@ -425,8 +437,11 @@ namespace Render
 		}
 		else 
 		{
-			//Chose best matching resolution 
-			VkExtent2D actualExtent = { WIDTH, HEIGHT };
+			VkExtent2D actualExtent = 
+			{ 
+				static_cast<uint32_t>(windowPtr->width), 
+				static_cast<uint32_t>(windowPtr->height)
+			};
 			actualExtent.width = std::max(capabilities.minImageExtent.width, std::min(capabilities.maxImageExtent.width, actualExtent.width));
 			actualExtent.height = std::max(capabilities.minImageExtent.height, std::min(capabilities.maxImageExtent.height, actualExtent.height));
 
@@ -518,5 +533,7 @@ namespace Render
 			}
 		}
 	}
+
+
 
 }
