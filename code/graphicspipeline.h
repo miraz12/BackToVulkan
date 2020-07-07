@@ -10,9 +10,10 @@ namespace Render
 	class GraphicsPipeline
 	{
 	public:
-		GraphicsPipeline() {};
+
+		GraphicsPipeline() = default;
 		GraphicsPipeline(VulkanInstance* vkInstance);
-		~GraphicsPipeline();
+		~GraphicsPipeline() = default;
 
 		void DrawFrame();
 		void RecreateSwapChain();
@@ -29,17 +30,17 @@ namespace Render
 		void CleanupSwapChain();
 
 		//Vulkan instance
-		VulkanInstance* vkInstance;
+		VulkanInstance* vkInstance {nullptr};
 		//Vulkan pipeline layout
-		VkPipelineLayout pipelineLayout;
+		VkPipelineLayout pipelineLayout{ VK_NULL_HANDLE };
 		//Graphics pipeline
-		VkPipeline graphicsPipeline;
+		VkPipeline graphicsPipeline{ VK_NULL_HANDLE };
 		//Vulkan render pass
-		VkRenderPass renderPass;
+		VkRenderPass renderPass{ VK_NULL_HANDLE };
 		//Vulkan swap chain framebuffers
 		std::vector<VkFramebuffer> swapChainFramebuffers;
 		//Vulkan command pool
-		VkCommandPool commandPool;
+		VkCommandPool commandPool{ VK_NULL_HANDLE };
 		//Vulkan command buffers
 		std::vector<VkCommandBuffer> commandBuffers;
 		//Semaphores for syncing queues
@@ -50,9 +51,9 @@ namespace Render
 		//Track which images in swap chain are in flight
 		std::vector<VkFence> imagesInFlight;
 		//Maximum frames in flight
-		const int MAX_FRAMES_IN_FLIGHT = 2;
+		const int MAX_FRAMES_IN_FLIGHT{ 2 };
 		//Current used fram
-		size_t currentFrame = 0;
+		size_t currentFrame{ 0 };
 	};
 }
 #endif // !_GRAPHICS_PIPELINE_H_

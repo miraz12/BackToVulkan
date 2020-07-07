@@ -40,7 +40,7 @@ namespace Render
 	class VulkanInstance
 	{
 	public:
-		VulkanInstance(){};
+		VulkanInstance() = default;
 		VulkanInstance(Display::Window* win);
 		~VulkanInstance() = default;
 
@@ -51,25 +51,23 @@ namespace Render
 		
 
 		//GLFW windowPtr pointer
-		Display::Window* windowPtr;
+		Display::Window* windowPtr{ nullptr };
 		//Vulkan instance
-		VkInstance instance;
+		VkInstance instance{VK_NULL_HANDLE};
 		//Vulkan surface
-		VkSurfaceKHR surface;
+		VkSurfaceKHR surface{ VK_NULL_HANDLE };
 		//Vulkan device
-		VkDevice vDevice;
+		VkDevice vDevice{ VK_NULL_HANDLE };
 		//Vulkan graphics queue
-		VkQueue graphicsQueue;
+		VkQueue graphicsQueue{ VK_NULL_HANDLE };
 		//Vulkan presentation queue
-		VkQueue presentQueue;
+		VkQueue presentQueue{ VK_NULL_HANDLE };
 		//Debug messenger callback function
-		VkDebugUtilsMessengerEXT debugMessenger;
+		VkDebugUtilsMessengerEXT debugMessenger{ VK_NULL_HANDLE };
 		//Physical gpu device TODO: Let device be its own class?		
-		VkPhysicalDevice physicalDevice = VK_NULL_HANDLE;
+		VkPhysicalDevice physicalDevice{ VK_NULL_HANDLE };
 		//Vulkan swap chain info
-		SwapChainVars swapChain;
-
-
+		SwapChainVars swapChain{0};
 
 
 	private:

@@ -1,5 +1,6 @@
 #include "graphicspipeline.h"
 #include "window.h"
+
 #include <stdexcept>
 
 namespace Render
@@ -13,10 +14,6 @@ namespace Render
 		CreateCommandPool();
 		CreateCommandBuffers();
 		CreateSyncObjects();
-	}
-
-	GraphicsPipeline::~GraphicsPipeline()
-	{
 	}
 
 	void GraphicsPipeline::DrawFrame()

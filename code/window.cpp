@@ -5,6 +5,8 @@ namespace Display
 {
 	Window::Window() :
 		window(nullptr),
+		instance(nullptr),
+		pipeline(nullptr),
 		width(800),
 		height(800),
 		title("Vulkan window")

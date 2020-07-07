@@ -1,16 +1,17 @@
 #ifndef _SHADER_OBJECT_H_
 #define _SHADER_OBJECT_H_
 
-#include <vulkan/vulkan.h>
 #include <string>
 #include <vector>
+
+#include "vulkaninstance.h"
 
 namespace Render
 {
 	class ShaderObject
 	{
 	public:
-		ShaderObject() {};
+		ShaderObject() = default;
 		ShaderObject(VkDevice vDevice, const std::string& vertex, const std::string& fragment, VkPipelineShaderStageCreateInfo shaderStages[]);
 		~ShaderObject();
 
@@ -18,9 +19,9 @@ namespace Render
 		static std::vector<char> readFile(const std::string& filename);
 		VkShaderModule createShaderModule(const std::vector<char>& code);
 
-		VkDevice vDevice;
-		VkShaderModule vertShaderModule;
-		VkShaderModule fragShaderModule;
+		VkDevice vDevice{ nullptr };
+		VkShaderModule vertShaderModule{ VK_NULL_HANDLE };
+		VkShaderModule fragShaderModule{ VK_NULL_HANDLE };
 	};
 }
 
