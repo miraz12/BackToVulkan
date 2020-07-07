@@ -534,6 +534,4 @@ namespace Render
 		}
 	}
 
-
-
 }

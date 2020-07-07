@@ -1,16 +1,12 @@
 #include "window.h"
 #include "graphicspipeline.h"
 
-
-
 namespace Display
 {
-	
-
 	Window::Window() :
 		window(nullptr),
-		width(1920),
-		height(1080),
+		width(800),
+		height(800),
 		title("Vulkan window")
 	{
 		//empty
@@ -25,7 +21,6 @@ namespace Display
 		window = glfwCreateWindow(width, height, title, nullptr, nullptr);
 		glfwSetWindowUserPointer(window, this);
 		glfwSetFramebufferSizeCallback(window, framebufferResizeCallback);
-
 
 		instance = new Render::VulkanInstance(this);
 		instance->InitVulkan();
@@ -75,6 +70,5 @@ namespace Display
 	{
 		return glfwGetRequiredInstanceExtensions(count);
 	}
-
 }
 

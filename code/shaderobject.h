@@ -1,3 +1,6 @@
+#ifndef _SHADER_OBJECT_H_
+#define _SHADER_OBJECT_H_
+
 #include <vulkan/vulkan.h>
 #include <string>
 #include <vector>
@@ -20,3 +23,5 @@ namespace Render
 		VkShaderModule fragShaderModule;
 	};
 }
+
+#endif // !_SHADER_OBJECT_H_

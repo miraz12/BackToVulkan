@@ -1,3 +1,6 @@
+#ifndef _WINDOW_H_
+#define _WINDOW_H_
+
 #include <GLFW/glfw3.h>
 #include <cstdint>
 
@@ -55,3 +58,5 @@ namespace Display
 	};
 
 }
+
+#endif // !_WINDOW_H_

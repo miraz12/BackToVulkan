@@ -1,3 +1,6 @@
+#ifndef _VULKAN_INSTANCE_H_
+#define _VULKAN_INSTANCE_H_
+
 #include <vulkan/vulkan.h>
 #include <vector>
 #include <optional>
@@ -98,3 +101,4 @@ namespace Render
 
 	};
 }
+#endif // !_VULKAN_INSTANCE_H_

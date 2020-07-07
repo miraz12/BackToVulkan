@@ -1,6 +1,8 @@
+#ifndef _GRAPHICS_PIPELINE_H_
+#define _GRAPHICS_PIPELINE_H_
+
 #include "shaderobject.h"
 #include "vulkaninstance.h"
-
 
 namespace Render
 {
@@ -51,8 +53,6 @@ namespace Render
 		const int MAX_FRAMES_IN_FLIGHT = 2;
 		//Current used fram
 		size_t currentFrame = 0;
-
-
-
 	};
 }
+#endif // !_GRAPHICS_PIPELINE_H_
