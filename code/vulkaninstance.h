@@ -48,6 +48,7 @@ namespace Render
 		void RecreateSwapChain();
 		void Cleanup();
 		QueueFamilyIndices FindQueueFamilies(VkPhysicalDevice device);
+		uint32_t findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties);
 		
 
 		//GLFW windowPtr pointer

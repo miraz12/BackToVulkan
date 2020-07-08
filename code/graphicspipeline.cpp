@@ -7,6 +7,8 @@ namespace Render
 {
 	GraphicsPipeline::GraphicsPipeline(VulkanInstance* vkInstance)
 	{
+		graphicsComp = new GraphicsComponent(vkInstance);
+
 		this->vkInstance = vkInstance;
 		CreateRenderPass();
 		CreateGraphicsPipeline();
@@ -21,8 +23,11 @@ namespace Render
 		vkWaitForFences(vkInstance->vDevice, 1, &inFlight[currentFrame], VK_TRUE, UINT64_MAX);
 
 		uint32_t imageIndex;
+#pragma warning ( push )
+#pragma warning ( disable : 26812)
 		//Retrive next avalible image
 		VkResult result = vkAcquireNextImageKHR(vkInstance->vDevice, vkInstance->swapChain.swapChain, UINT64_MAX, imagesAvailable[currentFrame], VK_NULL_HANDLE, &imageIndex);
+#pragma warning (pop)
 
 		if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR )
 		{
@@ -105,6 +110,7 @@ namespace Render
 
 	void GraphicsPipeline::Cleanup()
 	{
+
 		vkDeviceWaitIdle(vkInstance->vDevice);
 		CleanupSwapChain();
 		for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
@@ -114,6 +120,7 @@ namespace Render
 			vkDestroyFence(vkInstance->vDevice, inFlight[i], nullptr);
 		}
 		vkDestroyCommandPool(vkInstance->vDevice, commandPool, nullptr);
+		delete(graphicsComp);
 	}
 
 	void GraphicsPipeline::CreateGraphicsPipeline()
@@ -122,12 +129,15 @@ namespace Render
 		VkPipelineShaderStageCreateInfo shaderStages[2];
 		ShaderObject shaderObj = ShaderObject(vkInstance->vDevice, "shaders/standardvert.spv", "shaders/standardfrag.spv", shaderStages);
 
+		auto bindingDescription = GraphicsComponent::Vertex::getBindingDescription();
+		auto attributeDescriptions = GraphicsComponent::Vertex::getAttributeDescriptions();
+
 		VkPipelineVertexInputStateCreateInfo vertexInputInfo{};
 		vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
-		vertexInputInfo.vertexBindingDescriptionCount = 0;
-		vertexInputInfo.pVertexBindingDescriptions = nullptr; // Optional
-		vertexInputInfo.vertexAttributeDescriptionCount = 0;
-		vertexInputInfo.pVertexAttributeDescriptions = nullptr; // Optional
+		vertexInputInfo.vertexBindingDescriptionCount = 1;
+		vertexInputInfo.pVertexBindingDescriptions = &bindingDescription;
+		vertexInputInfo.vertexAttributeDescriptionCount = static_cast<uint32_t>(attributeDescriptions.size());
+		vertexInputInfo.pVertexAttributeDescriptions = attributeDescriptions.data();
 
 		VkPipelineInputAssemblyStateCreateInfo inputAssembly{};
 		inputAssembly.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
@@ -370,9 +380,12 @@ namespace Render
 
 			vkCmdBeginRenderPass(commandBuffers[i], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
 
-			vkCmdBindPipeline(commandBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline);
-			
-			vkCmdDraw(commandBuffers[i], 3, 1, 0, 0);
+				vkCmdBindPipeline(commandBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline);
+				VkBuffer vertexBuffers[] = { graphicsComp->vertexBuffer};
+				VkDeviceSize offsets[] = { 0 };
+				vkCmdBindVertexBuffers(commandBuffers[i], 0, 1, vertexBuffers, offsets);
+
+				vkCmdDraw(commandBuffers[i], static_cast<uint32_t>(graphicsComp->vertices.size()), 1, 0, 0);
 
 			vkCmdEndRenderPass(commandBuffers[i]);
 

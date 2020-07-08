@@ -2,6 +2,7 @@
 #define _WINDOW_H_
 
 #include <GLFW/glfw3.h>
+
 #include <cstdint>
 
 namespace Render
@@ -10,13 +11,10 @@ namespace Render
 	class GraphicsPipeline;
 }
 
-
 namespace Display
 {
-
 	class Window
 	{
-
 	public:
 		/// constructor
 		Window();
@@ -54,9 +52,7 @@ namespace Display
 			auto app = reinterpret_cast<Window*>(glfwGetWindowUserPointer(window));
 			app->frambufferResize = true;
 		}
-
 	};
-
 }
 
 #endif // !_WINDOW_H_

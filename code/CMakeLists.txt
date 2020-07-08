@@ -3,7 +3,7 @@
 #--------------------------------------------------------------------------
 
 PROJECT(example)
-FILE(GLOB project_headers *.h)
+FILE(GLOB project_headers *.h math/*.h)
 FILE(GLOB project_sources *.cpp)
 
 SET(files_project ${project_headers} ${project_sources} )
@@ -13,4 +13,4 @@ ADD_EXECUTABLE(example ${files_project})
 
 ADD_DEPENDENCIES(example exts)
 TARGET_LINK_LIBRARIES(example PUBLIC exts)
-set_property(TARGET example PROPERTY VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}")
+SET_PROPERTY(TARGET example PROPERTY VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}")
