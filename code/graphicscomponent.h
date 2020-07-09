@@ -2,17 +2,19 @@
 #define _GRAPHICS_COMPONENT_H_
 #include <vector>
 #include <array>
+#include <vulkan/vulkan.h>
 
-#include "vulkaninstance.h"
 #include "math/vector3D.h"
 #include "math/vector2D.h"
 
 namespace Render
 {
+	class GraphicsPipeline;
+
 	class GraphicsComponent
 	{
 	public:
-		GraphicsComponent(VulkanInstance* vInstance);
+		GraphicsComponent(GraphicsPipeline * vInstance);
 		GraphicsComponent() = default;
 		~GraphicsComponent();
 
@@ -51,19 +53,27 @@ namespace Render
 
 		const std::vector<Vertex> vertices = 
 		{
-			{{0.0f, -0.5f}, {1.0f, 0.0f, 0.0f}},
-			{{0.5f, 0.5f}, {0.0f, 1.0f, 0.0f}},
-			{{-0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}}
+			{{-0.5f, -0.5f}, {1.0f, 0.0f, 0.0f}},
+			{{0.5f, -0.5f}, {0.0f, 1.0f, 0.0f}},
+			{{0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}},
+			{{-0.5f, 0.5f}, {1.0f, 1.0f, 1.0f}}
 		};
-
 		VkBuffer vertexBuffer;
+
+		const std::vector<uint16_t> indices = 
+		{
+			0, 1, 2, 2, 3, 0
+		};
+		VkBuffer indexBuffer;
 
 
 	private:
-		void createVertexBuffer();
+		void CreateVertexBuffer();
+		void CreateIndexBuffer();
 
-		VulkanInstance* vInstance;
+		GraphicsPipeline* pipeline;
 		VkDeviceMemory vertexBufferMemory;
+		VkDeviceMemory indexBufferMemory;
 
 	};
 }

@@ -7,13 +7,14 @@ namespace Render
 {
 	GraphicsPipeline::GraphicsPipeline(VulkanInstance* vkInstance)
 	{
-		graphicsComp = new GraphicsComponent(vkInstance);
-
 		this->vkInstance = vkInstance;
+		
+		
 		CreateRenderPass();
 		CreateGraphicsPipeline();
 		CreateFramebuffers();
 		CreateCommandPool();
+		graphicsComp = new GraphicsComponent(this); //Break this out when implementing ECS
 		CreateCommandBuffers();
 		CreateSyncObjects();
 	}
@@ -92,6 +93,69 @@ namespace Render
 		CreateGraphicsPipeline();
 		CreateFramebuffers();
 		CreateCommandBuffers();
+	}
+
+	void GraphicsPipeline::CreateBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer& buffer, VkDeviceMemory& bufferMemory)
+	{
+		VkBufferCreateInfo bufferInfo{};
+		bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
+		bufferInfo.size = size;
+		bufferInfo.usage = usage;
+		bufferInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
+
+		if (vkCreateBuffer(vkInstance->vDevice, &bufferInfo, nullptr, &buffer) != VK_SUCCESS) 
+		{
+			throw std::runtime_error("failed to create buffer!");
+		}
+
+		VkMemoryRequirements memRequirements;
+		vkGetBufferMemoryRequirements(vkInstance->vDevice, buffer, &memRequirements);
+
+		VkMemoryAllocateInfo allocInfo{};
+		allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
+		allocInfo.allocationSize = memRequirements.size;
+		allocInfo.memoryTypeIndex = vkInstance->findMemoryType(memRequirements.memoryTypeBits, properties);
+
+		if (vkAllocateMemory(vkInstance->vDevice, &allocInfo, nullptr, &bufferMemory) != VK_SUCCESS) 
+		{
+			throw std::runtime_error("failed to allocate buffer memory!");
+		}
+
+		vkBindBufferMemory(vkInstance->vDevice, buffer, bufferMemory, 0);
+	}
+
+	void GraphicsPipeline::CopyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size) 
+	{
+		VkCommandBufferAllocateInfo allocInfo{};
+		allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
+		allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
+		allocInfo.commandPool = commandPool;
+		allocInfo.commandBufferCount = 1;
+
+		VkCommandBuffer commandBuffer;
+		vkAllocateCommandBuffers(vkInstance->vDevice, &allocInfo, &commandBuffer);
+
+		VkCommandBufferBeginInfo beginInfo{};
+		beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+		beginInfo.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
+
+		vkBeginCommandBuffer(commandBuffer, &beginInfo);
+
+		VkBufferCopy copyRegion{};
+		copyRegion.size = size;
+		vkCmdCopyBuffer(commandBuffer, srcBuffer, dstBuffer, 1, &copyRegion);
+
+		vkEndCommandBuffer(commandBuffer);
+
+		VkSubmitInfo submitInfo{};
+		submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+		submitInfo.commandBufferCount = 1;
+		submitInfo.pCommandBuffers = &commandBuffer;
+
+		vkQueueSubmit(vkInstance->graphicsQueue, 1, &submitInfo, VK_NULL_HANDLE);
+		vkQueueWaitIdle(vkInstance->graphicsQueue);
+
+		vkFreeCommandBuffers(vkInstance->vDevice, commandPool, 1, &commandBuffer);
 	}
 
 	void GraphicsPipeline::CleanupSwapChain()
@@ -384,8 +448,9 @@ namespace Render
 				VkBuffer vertexBuffers[] = { graphicsComp->vertexBuffer};
 				VkDeviceSize offsets[] = { 0 };
 				vkCmdBindVertexBuffers(commandBuffers[i], 0, 1, vertexBuffers, offsets);
+				vkCmdBindIndexBuffer(commandBuffers[i], graphicsComp->indexBuffer, 0, VK_INDEX_TYPE_UINT16);
 
-				vkCmdDraw(commandBuffers[i], static_cast<uint32_t>(graphicsComp->vertices.size()), 1, 0, 0);
+				vkCmdDrawIndexed(commandBuffers[i], static_cast<uint32_t>(graphicsComp->indices.size()), 1, 0, 0, 0);
 
 			vkCmdEndRenderPass(commandBuffers[i]);
 

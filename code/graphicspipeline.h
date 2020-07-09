@@ -18,7 +18,12 @@ namespace Render
 
 		void DrawFrame();
 		void RecreateSwapChain();
+		void CreateBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer& buffer, VkDeviceMemory& bufferMemory);
+		void CopyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size);
 		void Cleanup();
+
+		//Vulkan instance
+		VulkanInstance* vkInstance{ nullptr };
 
 	private:
 
@@ -30,8 +35,6 @@ namespace Render
 		void CreateSyncObjects();
 		void CleanupSwapChain();
 
-		//Vulkan instance
-		VulkanInstance* vkInstance {nullptr};
 		//Vulkan pipeline layout
 		VkPipelineLayout pipelineLayout{ VK_NULL_HANDLE };
 		//Graphics pipeline

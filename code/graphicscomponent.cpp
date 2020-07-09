@@ -1,50 +1,64 @@
 #include "graphicscomponent.h"
+#include "graphicspipeline.h"
 
 namespace Render
 {
 
 
-    GraphicsComponent::GraphicsComponent(VulkanInstance* vInstance) : vInstance(vInstance)
+    GraphicsComponent::GraphicsComponent(GraphicsPipeline * vInstance) : pipeline(vInstance)
     {
-        createVertexBuffer();
+        CreateVertexBuffer();
+        CreateIndexBuffer();
     }
 
     GraphicsComponent::~GraphicsComponent()
     {
-        vkDestroyBuffer(vInstance->vDevice, vertexBuffer, nullptr);
-        vkFreeMemory(vInstance->vDevice, vertexBufferMemory, nullptr);
+        vkDestroyBuffer(pipeline->vkInstance->vDevice, vertexBuffer, nullptr);
+        vkFreeMemory(pipeline->vkInstance->vDevice, vertexBufferMemory, nullptr);
+
+        vkDestroyBuffer(pipeline->vkInstance->vDevice, indexBuffer, nullptr);
+        vkFreeMemory(pipeline->vkInstance->vDevice, indexBufferMemory, nullptr);
     }
 
-    void GraphicsComponent::createVertexBuffer()
+    void GraphicsComponent::CreateVertexBuffer()
     {
-        VkBufferCreateInfo bufferInfo{};
-        bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
-        bufferInfo.size = sizeof(vertices[0]) * vertices.size();
-        bufferInfo.usage = VK_BUFFER_USAGE_VERTEX_BUFFER_BIT;
-        bufferInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
+        VkDeviceSize bufferSize = sizeof(vertices[0]) * vertices.size();
 
-        if (vkCreateBuffer(vInstance->vDevice, &bufferInfo, nullptr, &vertexBuffer) != VK_SUCCESS) 
-        {
-            throw std::runtime_error("failed to create vertex buffer!");
-        }
-
-        VkMemoryRequirements memRequirements;
-        vkGetBufferMemoryRequirements(vInstance->vDevice, vertexBuffer, &memRequirements);
-
-        VkMemoryAllocateInfo allocInfo{};
-        allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
-        allocInfo.allocationSize = memRequirements.size;
-        allocInfo.memoryTypeIndex = vInstance->findMemoryType(memRequirements.memoryTypeBits, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
-
-        if (vkAllocateMemory(vInstance->vDevice, &allocInfo, nullptr, &vertexBufferMemory) != VK_SUCCESS) {
-            throw std::runtime_error("failed to allocate vertex buffer memory!");
-        }
-
-        vkBindBufferMemory(vInstance->vDevice, vertexBuffer, vertexBufferMemory, 0);
+        VkBuffer stagingBuffer;
+        VkDeviceMemory stagingBufferMemory;
+        pipeline->CreateBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, stagingBuffer, stagingBufferMemory);
 
         void* data;
-        vkMapMemory(vInstance->vDevice, vertexBufferMemory, 0, bufferInfo.size, 0, &data);
-        memcpy(data, vertices.data(), (size_t)bufferInfo.size);
-        vkUnmapMemory(vInstance->vDevice, vertexBufferMemory);
+        vkMapMemory(pipeline->vkInstance->vDevice, stagingBufferMemory, 0, bufferSize, 0, &data);
+        memcpy(data, vertices.data(), (size_t)bufferSize);
+        vkUnmapMemory(pipeline->vkInstance->vDevice, stagingBufferMemory);
+
+        pipeline->CreateBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, vertexBuffer, vertexBufferMemory);
+
+        pipeline->CopyBuffer(stagingBuffer, vertexBuffer, bufferSize);
+
+        vkDestroyBuffer(pipeline->vkInstance->vDevice, stagingBuffer, nullptr);
+        vkFreeMemory(pipeline->vkInstance->vDevice, stagingBufferMemory, nullptr);
+    }
+
+    void GraphicsComponent::CreateIndexBuffer()
+    {
+        VkDeviceSize bufferSize = sizeof(indices[0]) * indices.size();
+
+        VkBuffer stagingBuffer;
+        VkDeviceMemory stagingBufferMemory;
+        pipeline->CreateBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, stagingBuffer, stagingBufferMemory);
+
+        void* data;
+        vkMapMemory(pipeline->vkInstance->vDevice, stagingBufferMemory, 0, bufferSize, 0, &data);
+        memcpy(data, indices.data(), (size_t)bufferSize);
+        vkUnmapMemory(pipeline->vkInstance->vDevice, stagingBufferMemory);
+
+        pipeline->CreateBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, indexBuffer, indexBufferMemory);
+
+        pipeline->CopyBuffer(stagingBuffer, indexBuffer, bufferSize);
+
+        vkDestroyBuffer(pipeline->vkInstance->vDevice, stagingBuffer, nullptr);
+        vkFreeMemory(pipeline->vkInstance->vDevice, stagingBufferMemory, nullptr);
     }
 }
