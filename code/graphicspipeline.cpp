@@ -2,6 +2,7 @@
 #include "window.h"
 
 #include <stdexcept>
+#include <chrono>
 
 namespace Render
 {
@@ -11,10 +12,12 @@ namespace Render
 		
 		
 		CreateRenderPass();
+		CreateDescriptorSetLayout();
 		CreateGraphicsPipeline();
 		CreateFramebuffers();
 		CreateCommandPool();
 		graphicsComp = new GraphicsComponent(this); //Break this out when implementing ECS
+		CreateUniformBuffers();
 		CreateCommandBuffers();
 		CreateSyncObjects();
 	}
@@ -47,6 +50,8 @@ namespace Render
 		}
 		// Mark the image as now being in use by this frame
 		imagesInFlight[imageIndex] = inFlight[currentFrame];
+
+		UpdateUniforms();
 
 		VkSubmitInfo submitInfo{};
 		submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
@@ -92,6 +97,7 @@ namespace Render
 		CreateRenderPass();
 		CreateGraphicsPipeline();
 		CreateFramebuffers();
+		CreateUniformBuffers();
 		CreateCommandBuffers();
 	}
 
@@ -170,13 +176,55 @@ namespace Render
 		vkDestroyPipeline(vkInstance->vDevice, graphicsPipeline, nullptr);
 		vkDestroyPipelineLayout(vkInstance->vDevice, pipelineLayout, nullptr);
 		vkDestroyRenderPass(vkInstance->vDevice, renderPass, nullptr);
+
+		for (size_t i = 0; i < vkInstance->swapChain.swapChainImages.size(); i++) 
+		{
+			vkDestroyBuffer(vkInstance->vDevice, uniformBuffers[i], nullptr);
+			vkFreeMemory(vkInstance->vDevice, uniformBuffersMemory[i], nullptr);
+		}
+	}
+
+	void GraphicsPipeline::CreateUniformBuffers()
+	{
+		VkDeviceSize bufferSize = sizeof(UniformBufferObject);
+
+		uniformBuffers.resize(vkInstance->swapChain.swapChainImages.size());
+		uniformBuffersMemory.resize(vkInstance->swapChain.swapChainImages.size());
+
+		for (size_t i = 0; i < vkInstance->swapChain.swapChainImages.size(); i++) 
+		{
+			CreateBuffer(bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, uniformBuffers[i], uniformBuffersMemory[i]);
+		}
+	}
+
+	void GraphicsPipeline::UpdateUniforms()
+	{
+		static auto startTime = std::chrono::high_resolution_clock::now();
+
+		auto currentTime = std::chrono::high_resolution_clock::now();
+		float time = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - startTime).count();
+		UniformBufferObject ubo{};
+		ubo.model = ubo.model.rot_y(time * 90.f);
+		ubo.view = ubo.view.LookAtRH(Math::vector3D(2.0f, 2.0f, 2.0f), Math::vector3D(0.0f, 0.0f, 0.0f), Math::vector3D(0.0f, 0.0f, 1.0f));
+		ubo.proj = ubo.proj.setPerspective(45.0f, vkInstance->swapChain.swapChainExtent.width / (float)vkInstance->swapChain.swapChainExtent.height, 0.1f, 10.0f);
+		ubo.proj[1][1] *= -1;
+
+		void* data;
+		vkMapMemory(vkInstance->vDevice, uniformBuffersMemory[currentFrame], 0, sizeof(ubo), 0, &data);
+		memcpy(data, &ubo, sizeof(ubo));
+		vkUnmapMemory(vkInstance->vDevice, uniformBuffersMemory[currentFrame]);
+	}
+
+	void GraphicsPipeline::CreateDescriptorPool()
+	{
+
 	}
 
 	void GraphicsPipeline::Cleanup()
 	{
-
 		vkDeviceWaitIdle(vkInstance->vDevice);
 		CleanupSwapChain();
+		vkDestroyDescriptorSetLayout(vkInstance->vDevice, descriptorSetLayout, nullptr);
 		for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
 		{
 			vkDestroySemaphore(vkInstance->vDevice, imagesAvailable[i], nullptr);
@@ -185,6 +233,26 @@ namespace Render
 		}
 		vkDestroyCommandPool(vkInstance->vDevice, commandPool, nullptr);
 		delete(graphicsComp);
+	}
+
+	void GraphicsPipeline::CreateDescriptorSetLayout()
+	{
+		VkDescriptorSetLayoutBinding uboLayoutBinding{};
+		uboLayoutBinding.binding = 0;
+		uboLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+		uboLayoutBinding.descriptorCount = 1;
+		uboLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
+		uboLayoutBinding.pImmutableSamplers = nullptr; // Optional
+
+		VkDescriptorSetLayoutCreateInfo layoutInfo{};
+		layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
+		layoutInfo.bindingCount = 1;
+		layoutInfo.pBindings = &uboLayoutBinding;
+
+		if (vkCreateDescriptorSetLayout(vkInstance->vDevice, &layoutInfo, nullptr, &descriptorSetLayout) != VK_SUCCESS) 
+		{
+			throw std::runtime_error("failed to create descriptor set layout!");
+		}
 	}
 
 	void GraphicsPipeline::CreateGraphicsPipeline()
@@ -284,8 +352,8 @@ namespace Render
 
 		VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
 		pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
-		pipelineLayoutInfo.setLayoutCount = 0; // Optional
-		pipelineLayoutInfo.pSetLayouts = nullptr; // Optional
+		pipelineLayoutInfo.setLayoutCount = 1; 
+		pipelineLayoutInfo.pSetLayouts = &descriptorSetLayout;
 		pipelineLayoutInfo.pushConstantRangeCount = 0; // Optional
 		pipelineLayoutInfo.pPushConstantRanges = nullptr; // Optional
 

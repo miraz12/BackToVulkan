@@ -4,6 +4,7 @@
 #include "shaderobject.h"
 #include "vulkaninstance.h"
 #include "graphicscomponent.h"
+#include "math/matrix4D.h"
 
 namespace Render
 {
@@ -27,6 +28,7 @@ namespace Render
 
 	private:
 
+		void CreateDescriptorSetLayout();
 		void CreateGraphicsPipeline();
 		void CreateRenderPass();
 		void CreateFramebuffers();
@@ -34,6 +36,9 @@ namespace Render
 		void CreateCommandBuffers();
 		void CreateSyncObjects();
 		void CleanupSwapChain();
+		void CreateUniformBuffers();
+		void UpdateUniforms();
+		void CreateDescriptorPool();
 
 		//Vulkan pipeline layout
 		VkPipelineLayout pipelineLayout{ VK_NULL_HANDLE };
@@ -59,8 +64,19 @@ namespace Render
 		//Current used fram
 		size_t currentFrame{ 0 };
 
-		//Store this in ECS later
+		//Vulkan descriptor set layout
+		VkDescriptorSetLayout descriptorSetLayout;
+
+		//Store this in appropriate ECS component later
 		GraphicsComponent* graphicsComp;
+		std::vector<VkBuffer> uniformBuffers;
+		std::vector<VkDeviceMemory> uniformBuffersMemory;
+
+		struct UniformBufferObject {
+			Math::matrix4D model; //TODO: This should be in graphics component
+			Math::matrix4D view; //TODO: Theese two maybe in a "Camera" class or something
+			Math::matrix4D proj;
+		};
 	};
 }
 #endif // !_GRAPHICS_PIPELINE_H_
