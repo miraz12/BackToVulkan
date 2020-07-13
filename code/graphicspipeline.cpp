@@ -15,9 +15,11 @@ namespace Render
 		CreateDescriptorSetLayout();
 		CreateGraphicsPipeline();
 		CreateFramebuffers();
+		CreateUniformBuffers();
+		CreateDescriptorPool();
+		CreateDescriptorSets();
 		CreateCommandPool();
 		graphicsComp = new GraphicsComponent(this); //Break this out when implementing ECS
-		CreateUniformBuffers();
 		CreateCommandBuffers();
 		CreateSyncObjects();
 	}
@@ -51,7 +53,7 @@ namespace Render
 		// Mark the image as now being in use by this frame
 		imagesInFlight[imageIndex] = inFlight[currentFrame];
 
-		UpdateUniforms();
+		UpdateUniforms(imageIndex);
 
 		VkSubmitInfo submitInfo{};
 		submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
@@ -98,6 +100,8 @@ namespace Render
 		CreateGraphicsPipeline();
 		CreateFramebuffers();
 		CreateUniformBuffers();
+		CreateDescriptorPool();
+		CreateDescriptorSets();
 		CreateCommandBuffers();
 	}
 
@@ -177,47 +181,99 @@ namespace Render
 		vkDestroyPipelineLayout(vkInstance->vDevice, pipelineLayout, nullptr);
 		vkDestroyRenderPass(vkInstance->vDevice, renderPass, nullptr);
 
-		for (size_t i = 0; i < vkInstance->swapChain.swapChainImages.size(); i++) 
+		for (size_t i = 0; i < vkInstance->numImages; i++) 
 		{
 			vkDestroyBuffer(vkInstance->vDevice, uniformBuffers[i], nullptr);
 			vkFreeMemory(vkInstance->vDevice, uniformBuffersMemory[i], nullptr);
 		}
+		vkDestroyDescriptorPool(vkInstance->vDevice, descriptorPool, nullptr);
 	}
 
 	void GraphicsPipeline::CreateUniformBuffers()
 	{
 		VkDeviceSize bufferSize = sizeof(UniformBufferObject);
 
-		uniformBuffers.resize(vkInstance->swapChain.swapChainImages.size());
-		uniformBuffersMemory.resize(vkInstance->swapChain.swapChainImages.size());
+		uniformBuffers.resize(vkInstance->numImages);
+		uniformBuffersMemory.resize(vkInstance->numImages);
 
-		for (size_t i = 0; i < vkInstance->swapChain.swapChainImages.size(); i++) 
+		for (size_t i = 0; i < vkInstance->numImages; i++) 
 		{
 			CreateBuffer(bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, uniformBuffers[i], uniformBuffersMemory[i]);
 		}
 	}
 
-	void GraphicsPipeline::UpdateUniforms()
+	void GraphicsPipeline::UpdateUniforms(uint32_t currentImage)
 	{
 		static auto startTime = std::chrono::high_resolution_clock::now();
 
 		auto currentTime = std::chrono::high_resolution_clock::now();
 		float time = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - startTime).count();
 		UniformBufferObject ubo{};
-		ubo.model = ubo.model.rot_y(time * 90.f);
+		ubo.model = ubo.model.rot_z(time * 90.f);
 		ubo.view = ubo.view.LookAtRH(Math::vector3D(2.0f, 2.0f, 2.0f), Math::vector3D(0.0f, 0.0f, 0.0f), Math::vector3D(0.0f, 0.0f, 1.0f));
 		ubo.proj = ubo.proj.setPerspective(45.0f, vkInstance->swapChain.swapChainExtent.width / (float)vkInstance->swapChain.swapChainExtent.height, 0.1f, 10.0f);
 		ubo.proj[1][1] *= -1;
 
 		void* data;
-		vkMapMemory(vkInstance->vDevice, uniformBuffersMemory[currentFrame], 0, sizeof(ubo), 0, &data);
+		vkMapMemory(vkInstance->vDevice, uniformBuffersMemory[currentImage], 0, sizeof(ubo), 0, &data);
 		memcpy(data, &ubo, sizeof(ubo));
-		vkUnmapMemory(vkInstance->vDevice, uniformBuffersMemory[currentFrame]);
+		vkUnmapMemory(vkInstance->vDevice, uniformBuffersMemory[currentImage]);
 	}
 
 	void GraphicsPipeline::CreateDescriptorPool()
 	{
+		VkDescriptorPoolSize poolSize{};
+		poolSize.type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+		poolSize.descriptorCount = static_cast<uint32_t>(vkInstance->numImages);
 
+
+		VkDescriptorPoolCreateInfo poolInfo{};
+		poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
+		poolInfo.poolSizeCount = 1;
+		poolInfo.pPoolSizes = &poolSize;
+		poolInfo.maxSets = static_cast<uint32_t>(vkInstance->numImages);
+
+		if (vkCreateDescriptorPool(vkInstance->vDevice, &poolInfo, nullptr, &descriptorPool) != VK_SUCCESS)
+		{
+			throw std::runtime_error("failed to create descriptor pool!");
+		}
+	}
+
+	void GraphicsPipeline::CreateDescriptorSets()
+	{
+		std::vector<VkDescriptorSetLayout> layouts(vkInstance->numImages, descriptorSetLayout);
+		VkDescriptorSetAllocateInfo allocInfo{};
+		allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
+		allocInfo.descriptorPool = descriptorPool;
+		allocInfo.descriptorSetCount = vkInstance->numImages;
+		allocInfo.pSetLayouts = layouts.data();
+
+		descriptorSets.resize(vkInstance->numImages);
+		if (vkAllocateDescriptorSets(vkInstance->vDevice, &allocInfo, descriptorSets.data()) != VK_SUCCESS) 
+		{
+			throw std::runtime_error("failed to allocate descriptor sets!");
+		}
+
+		for (size_t i = 0; i < vkInstance->numImages; i++) 
+		{
+			VkDescriptorBufferInfo bufferInfo{};
+			bufferInfo.buffer = uniformBuffers[i];
+			bufferInfo.offset = 0;
+			bufferInfo.range = sizeof(UniformBufferObject);
+
+			VkWriteDescriptorSet descriptorWrite{};
+			descriptorWrite.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+			descriptorWrite.dstSet = descriptorSets[i];
+			descriptorWrite.dstBinding = 0;
+			descriptorWrite.dstArrayElement = 0;
+			descriptorWrite.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+			descriptorWrite.descriptorCount = 1;
+			descriptorWrite.pBufferInfo = &bufferInfo;
+			descriptorWrite.pImageInfo = nullptr; // Optional
+			descriptorWrite.pTexelBufferView = nullptr; // Optional
+
+			vkUpdateDescriptorSets(vkInstance->vDevice, 1, &descriptorWrite, 0, nullptr);
+		}
 	}
 
 	void GraphicsPipeline::Cleanup()
@@ -303,7 +359,7 @@ namespace Render
 		//rasterizer.polygonMode = VK_POLYGON_MODE_LINE; //Wireframe
 		rasterizer.lineWidth = 1.0f;
 		rasterizer.cullMode = VK_CULL_MODE_BACK_BIT;
-		rasterizer.frontFace = VK_FRONT_FACE_CLOCKWISE;
+		rasterizer.frontFace = VK_FRONT_FACE_COUNTER_CLOCKWISE;
 		rasterizer.depthBiasEnable = VK_FALSE;
 		rasterizer.depthBiasConstantFactor = 0.0f; // Optional
 		rasterizer.depthBiasClamp = 0.0f; // Optional
@@ -518,6 +574,8 @@ namespace Render
 				vkCmdBindVertexBuffers(commandBuffers[i], 0, 1, vertexBuffers, offsets);
 				vkCmdBindIndexBuffer(commandBuffers[i], graphicsComp->indexBuffer, 0, VK_INDEX_TYPE_UINT16);
 
+				vkCmdBindDescriptorSets(commandBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 1, &descriptorSets[i], 0, nullptr);
+
 				vkCmdDrawIndexed(commandBuffers[i], static_cast<uint32_t>(graphicsComp->indices.size()), 1, 0, 0, 0);
 
 			vkCmdEndRenderPass(commandBuffers[i]);
@@ -534,7 +592,7 @@ namespace Render
 		imagesAvailable.resize(MAX_FRAMES_IN_FLIGHT);
 		rendersFinished.resize(MAX_FRAMES_IN_FLIGHT);
 		inFlight.resize(MAX_FRAMES_IN_FLIGHT);
-		imagesInFlight.resize(vkInstance->swapChain.swapChainImages.size(), VK_NULL_HANDLE);
+		imagesInFlight.resize(vkInstance->numImages, VK_NULL_HANDLE);
 
 		VkSemaphoreCreateInfo semaphoreInfo{};
 		semaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;

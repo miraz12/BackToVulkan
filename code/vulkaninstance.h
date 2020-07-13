@@ -69,6 +69,8 @@ namespace Render
 		VkPhysicalDevice physicalDevice{ VK_NULL_HANDLE };
 		//Vulkan swap chain info
 		SwapChainVars swapChain{0};
+		//Number of swap chain images
+		uint32_t numImages{0};
 
 
 	private:

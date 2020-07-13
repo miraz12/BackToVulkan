@@ -515,6 +515,7 @@ namespace Render
 		}
 
 		vkGetSwapchainImagesKHR(vDevice, swapChain.swapChain, &imageCount, nullptr);
+		numImages = imageCount;
 		swapChain.swapChainImages.resize(imageCount);
 		vkGetSwapchainImagesKHR(vDevice, swapChain.swapChain, &imageCount, swapChain.swapChainImages.data());
 

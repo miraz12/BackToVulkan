@@ -37,8 +37,9 @@ namespace Render
 		void CreateSyncObjects();
 		void CleanupSwapChain();
 		void CreateUniformBuffers();
-		void UpdateUniforms();
+		void UpdateUniforms(uint32_t currentImage);
 		void CreateDescriptorPool();
+		void CreateDescriptorSets();
 
 		//Vulkan pipeline layout
 		VkPipelineLayout pipelineLayout{ VK_NULL_HANDLE };
@@ -66,6 +67,10 @@ namespace Render
 
 		//Vulkan descriptor set layout
 		VkDescriptorSetLayout descriptorSetLayout;
+		//Vulkan descriptor set pool 
+		VkDescriptorPool descriptorPool;
+		//Vulkan descriptor sets
+		std::vector<VkDescriptorSet> descriptorSets;
 
 		//Store this in appropriate ECS component later
 		GraphicsComponent* graphicsComp;
