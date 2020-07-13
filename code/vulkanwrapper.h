@@ -33,6 +33,16 @@ namespace Render
 		VkDebugUtilsMessengerEXT debugMessenger;
 		//Physical gpu device TODO: Let device be its own class?		
 		VkPhysicalDevice physicalDevice = VK_NULL_HANDLE;
+		//Vulkan swap chain
+		VkSwapchainKHR swapChain;
+		//Vulkan swap chain images
+		std::vector<VkImage> swapChainImages;
+		//Vulkan swap chain image format
+		VkFormat swapChainImageFormat;
+		//Vulkan swap chain extent
+		VkExtent2D swapChainExtent;
+		//Vulkan image views
+		std::vector<VkImageView> swapChainImageViews;
 
 		struct QueueFamilyIndices
 		{
@@ -63,6 +73,11 @@ namespace Render
 		void CreateSurface();
 		bool CheckDeviceExtensionSupport(VkPhysicalDevice device);
 		SwapChainSupportDetails querySwapChainSupport(VkPhysicalDevice device);
-		
+		VkSurfaceFormatKHR ChooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats);
+		VkPresentModeKHR ChooseSwapPresentMode(const std::vector<VkPresentModeKHR>& availablePresentModes);
+		VkExtent2D ChooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities);
+		void CreateSwapChain();
+		void CreateImageViews();
+		void createGraphicsPipeline();
 	};
 }
