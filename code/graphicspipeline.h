@@ -19,12 +19,19 @@ namespace Render
 
 		void DrawFrame();
 		void RecreateSwapChain();
-		void CreateBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer& buffer, VkDeviceMemory& bufferMemory);
+		void CreateBuffer(VkDeviceSize size, VkBufferUsageFlags usage,
+						  VkMemoryPropertyFlags properties, VkBuffer& buffer, VkDeviceMemory& bufferMemory);
 		VkCommandBuffer BeginSingleTimeCommands();
 		void EndSingleTimeCommands(VkCommandBuffer commandBuffer);
 		void CopyBufferToImage(VkBuffer buffer, VkImage image, uint32_t width, uint32_t height);
 		void CopyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size);
+		void CreateImage(uint32_t width, uint32_t height, VkFormat format,
+						 VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties,
+						 VkImage& image, VkDeviceMemory& imageMemory);
+		void TransitionImageLayout(VkImage image, VkFormat format, VkImageLayout newLayout, 
+								   VkImageLayout oldLayout = VK_IMAGE_LAYOUT_UNDEFINED);
 		void Cleanup();
+
 
 		//Vulkan instance
 		VulkanInstance* vkInstance{ nullptr };
@@ -43,6 +50,10 @@ namespace Render
 		void UpdateUniforms(uint32_t currentImage);
 		void CreateDescriptorPool();
 		void CreateDescriptorSets();
+		void CreateDepthResources();
+		
+		VkFormat FindDepthFormat();
+		bool HasStencilComponent(VkFormat format);
 
 		//Vulkan pipeline layout
 		VkPipelineLayout pipelineLayout{ VK_NULL_HANDLE };
@@ -79,6 +90,11 @@ namespace Render
 		GraphicsComponent* graphicsComp;
 		std::vector<VkBuffer> uniformBuffers;
 		std::vector<VkDeviceMemory> uniformBuffersMemory;
+
+		//Vulkan depth variables
+		VkImage depthImage;
+		VkDeviceMemory depthImageMemory;
+		VkImageView depthImageView;
 
 		struct UniformBufferObject {
 			Math::matrix4D model; //TODO: This should be in graphics component

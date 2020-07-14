@@ -21,8 +21,6 @@ namespace Render
 
 	private:
 		void CreateTextureImage(const char* texfile);
-		void CreateImage(uint32_t width, uint32_t height, VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties, VkImage& image, VkDeviceMemory& imageMemory);
-		void TransitionImageLayout(VkImage image, VkFormat format, VkImageLayout newLayout, VkImageLayout oldLayout = VK_IMAGE_LAYOUT_UNDEFINED);
 		void CreateTextureImageView();
 		void CreateTextureSampler();
 

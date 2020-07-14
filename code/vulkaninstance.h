@@ -49,7 +49,8 @@ namespace Render
 		void Cleanup();
 		QueueFamilyIndices FindQueueFamilies(VkPhysicalDevice device);
 		uint32_t findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties);
-		VkImageView CreateImageView(VkImage image, VkFormat format);
+		VkImageView CreateImageView(VkImage image, VkFormat format, VkImageAspectFlags aspectFlags);
+		VkFormat FindSupportedFormat(const std::vector<VkFormat>& candidates, VkImageTiling tiling, VkFormatFeatureFlags features);
 
 		//GLFW windowPtr pointer
 		Display::Window* windowPtr{ nullptr };
