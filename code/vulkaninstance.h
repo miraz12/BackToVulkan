@@ -49,7 +49,7 @@ namespace Render
 		void Cleanup();
 		QueueFamilyIndices FindQueueFamilies(VkPhysicalDevice device);
 		uint32_t findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties);
-		
+		VkImageView CreateImageView(VkImage image, VkFormat format);
 
 		//GLFW windowPtr pointer
 		Display::Window* windowPtr{ nullptr };

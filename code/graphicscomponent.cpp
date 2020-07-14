@@ -3,10 +3,9 @@
 
 namespace Render
 {
-
-
     GraphicsComponent::GraphicsComponent(GraphicsPipeline * vInstance) : pipeline(vInstance)
     {
+        CreateTextureImage();
         CreateVertexBuffer();
         CreateIndexBuffer();
     }
@@ -18,6 +17,7 @@ namespace Render
 
         vkDestroyBuffer(pipeline->vkInstance->vDevice, indexBuffer, nullptr);
         vkFreeMemory(pipeline->vkInstance->vDevice, indexBufferMemory, nullptr);
+        delete(texture);
     }
 
     void GraphicsComponent::CreateVertexBuffer()
@@ -60,5 +60,10 @@ namespace Render
 
         vkDestroyBuffer(pipeline->vkInstance->vDevice, stagingBuffer, nullptr);
         vkFreeMemory(pipeline->vkInstance->vDevice, stagingBufferMemory, nullptr);
+    }
+
+    void GraphicsComponent::CreateTextureImage()
+    {
+        texture = new TextureResource(pipeline, "resources/textures/statue.jpg");
     }
 }

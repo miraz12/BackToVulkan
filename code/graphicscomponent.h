@@ -4,6 +4,7 @@
 #include <array>
 #include <vulkan/vulkan.h>
 
+#include "textureresource.h"
 #include "math/vector3D.h"
 #include "math/vector2D.h"
 
@@ -23,6 +24,7 @@ namespace Render
 		{
 			Math::vector2D pos;
 			Math::vector3D color;
+			Math::vector2D texCoords;
 
 			static VkVertexInputBindingDescription getBindingDescription() 
 			{
@@ -34,9 +36,9 @@ namespace Render
 				return bindingDescription;
 			}
 
-			static std::array<VkVertexInputAttributeDescription, 2> getAttributeDescriptions()
+			static std::array<VkVertexInputAttributeDescription, 3> getAttributeDescriptions()
 			{
-				std::array<VkVertexInputAttributeDescription, 2> attributeDescriptions{};
+				std::array<VkVertexInputAttributeDescription, 3> attributeDescriptions{};
 				attributeDescriptions[0].binding = 0;
 				attributeDescriptions[0].location = 0;
 				attributeDescriptions[0].format = VK_FORMAT_R32G32_SFLOAT;
@@ -46,17 +48,22 @@ namespace Render
 				attributeDescriptions[1].location = 1;
 				attributeDescriptions[1].format = VK_FORMAT_R32G32B32_SFLOAT;
 				attributeDescriptions[1].offset = offsetof(Vertex, color);
-				
+
+				attributeDescriptions[2].binding = 0;
+				attributeDescriptions[2].location = 2;
+				attributeDescriptions[2].format = VK_FORMAT_R32G32_SFLOAT;
+				attributeDescriptions[2].offset = offsetof(Vertex, texCoords);
+
 				return attributeDescriptions;
 			}
 		};
 
 		const std::vector<Vertex> vertices = 
 		{
-			{{-0.5f, -0.5f}, {1.0f, 0.0f, 0.0f}},
-			{{0.5f, -0.5f}, {0.0f, 1.0f, 0.0f}},
-			{{0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}},
-			{{-0.5f, 0.5f}, {1.0f, 1.0f, 1.0f}}
+			{{-0.5f, -0.5f}, {1.0f, 0.0f, 0.0f}, {0.0f, 0.0f}},
+			{{0.5f, -0.5f}, {0.0f, 1.0f, 0.0f}, {1.0f, 0.0f}},
+			{{0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}, {1.0f, 1.0f}},
+			{{-0.5f, 0.5f}, {1.0f, 1.0f, 1.0f}, {0.0f, 1.0f}}
 		};
 		VkBuffer vertexBuffer;
 
@@ -65,11 +72,15 @@ namespace Render
 			0, 1, 2, 2, 3, 0
 		};
 		VkBuffer indexBuffer;
+		TextureResource* texture{ nullptr };
 
 
 	private:
 		void CreateVertexBuffer();
 		void CreateIndexBuffer();
+		void CreateTextureImage();
+		
+
 
 		GraphicsPipeline* pipeline;
 		VkDeviceMemory vertexBufferMemory;
