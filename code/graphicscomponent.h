@@ -5,6 +5,7 @@
 #include <vulkan/vulkan.h>
 
 #include "textureresource.h"
+#include "meshresource.h"
 #include "math/vector3D.h"
 #include "math/vector2D.h"
 
@@ -18,7 +19,6 @@ namespace Render
 		GraphicsComponent(GraphicsPipeline * vInstance);
 		GraphicsComponent() = default;
 		~GraphicsComponent();
-
 
 		struct Vertex
 		{
@@ -70,7 +70,7 @@ namespace Render
 			{{0.5f, 0.5f, -0.5f},   {0.0f, 0.0f, 1.0f}, {1.0f, 1.0f}},
 			{{-0.5f, 0.5f, -0.5f},  {1.0f, 1.0f, 1.0f}, {0.0f, 1.0f}}
 		};
-		const std::vector<uint16_t> indices = 
+		const std::vector<uint32_t> indices = 
 		{
 			0, 1, 2, 2, 3, 0,
 			4, 5, 6, 6, 7, 4
@@ -79,6 +79,7 @@ namespace Render
 		VkBuffer vertexBuffer;
 		VkBuffer indexBuffer;
 		TextureResource* texture{ nullptr };
+		MeshResource* mesh{ nullptr };
 
 
 	private:

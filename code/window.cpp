@@ -1,5 +1,5 @@
-#include "window.h"
 #include "graphicspipeline.h"
+#include "window.h"
 
 namespace Display
 {

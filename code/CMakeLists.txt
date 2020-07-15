@@ -6,8 +6,10 @@ PROJECT(example)
 FILE(GLOB project_headers *.h math/*.h IO/*.h)
 FILE(GLOB project_sources *.cpp)
 
+
 SET(files_project ${project_headers} ${project_sources} )
-SOURCE_GROUP("example" FILES ${files_project})
+source_group("header" FILES ${project_headers})
+source_group("source" FILES ${project_sources})
 
 ADD_EXECUTABLE(example ${files_project})
 

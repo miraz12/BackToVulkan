@@ -1,7 +1,10 @@
 #include "textureresource.h"
-#define STB_IMAGE_IMPLEMENTATION
-#include "IO/stb_image.h"
 #include "graphicspipeline.h"
+
+#define STB_IMAGE_IMPLEMENTATION
+#define STB_IMAGE_WRITE_IMPLEMENTATION
+#define TINYGLTF_IMPLEMENTATION 
+#include "tiny_gltf.h"
 
 #include <stdexcept>
 

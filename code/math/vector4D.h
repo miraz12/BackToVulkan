@@ -10,11 +10,19 @@ namespace Math
 	public:
 		float Varray[4];
 
-		vector4D(void)
+		vector4D()
 		{
 			Varray[0] = 0;
 			Varray[1] = 0;
 			Varray[2] = 0;
+			Varray[3] = 1;
+		}
+
+		vector4D(float v)
+		{
+			Varray[0] = v;
+			Varray[1] = v;
+			Varray[2] = v;
 			Varray[3] = 1;
 		}
 

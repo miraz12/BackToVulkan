@@ -9,11 +9,18 @@ namespace Math
 	public:
 		float Varray[3];
 
-		vector3D(void)
+		vector3D()
 		{
 			Varray[0] = 0;
 			Varray[1] = 0;
 			Varray[2] = 0;
+		}
+
+		vector3D(float v)
+		{
+			Varray[0] = v;
+			Varray[1] = v;
+			Varray[2] = v;
 		}
 
 		vector3D(float x, float y, float z)

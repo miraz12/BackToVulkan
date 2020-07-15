@@ -8,6 +8,8 @@ namespace Render
         CreateTextureImage();
         CreateVertexBuffer();
         CreateIndexBuffer();
+        mesh = new MeshResource();
+        mesh->LoadModel("resources/models/Cube/Cube.gltf", vInstance, vInstance->vkInstance->graphicsQueue);
     }
 
     GraphicsComponent::~GraphicsComponent()
