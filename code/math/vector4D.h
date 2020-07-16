@@ -26,6 +26,14 @@ namespace Math
 			Varray[3] = 1;
 		}
 
+		vector4D(double v)
+		{
+			Varray[0] = static_cast<float>(v);
+			Varray[1] = static_cast<float>(v);
+			Varray[2] = static_cast<float>(v);
+			Varray[3] = 1;
+		}
+
 		vector4D(float x, float y, float z, float w)
 		{
 			Varray[0] = x;
@@ -33,12 +41,33 @@ namespace Math
 			Varray[2] = z;
 			Varray[3] = w;
 		}
+		vector4D(double x, double y, double z, double w)
+		{
+			Varray[0] = static_cast<float>(x);
+			Varray[1] = static_cast<float>(y);
+			Varray[2] = static_cast<float>(z);
+			Varray[3] = static_cast<float>(w);
+		}
 		vector4D(vector3D v)
 		{
 			Varray[0] = v[0];
 			Varray[1] = v[1];
 			Varray[2] = v[2];
 			Varray[3] = 1.0f;
+		}		
+		vector4D(vector3D v, double w)
+		{
+			Varray[0] = v[0];
+			Varray[1] = v[1];
+			Varray[2] = v[2];
+			Varray[3] = static_cast<float>(w);
+		}
+		vector4D(vector3D v, float w)
+		{
+			Varray[0] = v[0];
+			Varray[1] = v[1];
+			Varray[2] = v[2];
+			Varray[3] = w;
 		}
 
 		~vector4D(void) = default;

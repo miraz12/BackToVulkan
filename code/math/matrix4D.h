@@ -3,6 +3,7 @@
 #include "vector4D.h"
 #include "vector3D.h"
 #include "matrix3D.h"
+#include "quaternion.h"
 
 namespace Math
 {
@@ -32,6 +33,52 @@ namespace Math
 			this->values2D[2][2] = m.values2D[2][2];
 			this->values2D[2][3] = 0;
 
+			this->values2D[3][0] = 0;
+			this->values2D[3][1] = 0;
+			this->values2D[3][2] = 0;
+			this->values2D[3][3] = 1;
+		}
+
+		inline matrix4D(float v)
+		{
+			this->values2D[0][0] = v;
+			this->values2D[0][1] = v;
+			this->values2D[0][2] = v;
+			this->values2D[0][3] = v;
+
+			this->values2D[1][0] = v;
+			this->values2D[1][1] = v;
+			this->values2D[1][2] = v;
+			this->values2D[1][3] = v;
+
+			this->values2D[2][0] = v;
+			this->values2D[2][1] = v;
+			this->values2D[2][2] = v;
+			this->values2D[2][3] = v;
+
+			this->values2D[3][0] = v;
+			this->values2D[3][1] = v;
+			this->values2D[3][2] = v;
+			this->values2D[3][3] = v;
+		}
+
+		inline matrix4D(quaternion quat)
+		{
+			this->values2D[0][0] = 1 - 2 * ((quat[1] * quat[1]) + (quat[2] * quat[2]));
+			this->values2D[0][1] = 2 * ((quat[0] * quat[1]) - (quat[2] * quat[3]));
+			this->values2D[0][2] = 2 * ((quat[0] * quat[2]) + (quat[1] * quat[3]));
+			this->values2D[0][3] = 0;
+			
+			this->values2D[1][0] = 2 * ((quat[0] * quat[1]) + (quat[2] * quat[3]));
+			this->values2D[1][1] = 1 - 2 * ((quat[0] * quat[0]) + (quat[2] * quat[2]));
+			this->values2D[1][2] = 2 * ((quat[1] * quat[2]) - (quat[0] * quat[3]));
+			this->values2D[1][3] = 0;
+			
+			this->values2D[2][0] = 2 * ((quat[0] * quat[2]) - (quat[1] * quat[3]));
+			this->values2D[2][1] = 2 * ((quat[1] * quat[2]) + (quat[0] * quat[3]));
+			this->values2D[2][2] = 1 - 2 * ((quat[0] * quat[0]) + (quat[1] * quat[1]));
+			this->values2D[2][3] = 0;
+			
 			this->values2D[3][0] = 0;
 			this->values2D[3][1] = 0;
 			this->values2D[3][2] = 0;
@@ -189,7 +236,7 @@ namespace Math
 		inline matrix4D View(vector3D eye, vector3D target, vector3D up)
 		{
 			vector3D x, y, z;
-			vector3D vect(0, 0, 0);
+			vector3D vect(0.0f, 0.0f, 0.0f);
 
 			z = target - eye;
 			z = z.normalize(z);

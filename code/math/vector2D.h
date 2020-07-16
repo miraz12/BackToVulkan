@@ -18,6 +18,12 @@ namespace Math
 			Varray[1] = 0;
 		}
 
+		vector2D(float v)
+		{
+			Varray[0] = v;
+			Varray[1] = v;
+		}
+
 		vector2D(float x, float y)
 		{
 			Varray[0] = x;

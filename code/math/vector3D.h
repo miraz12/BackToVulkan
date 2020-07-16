@@ -23,11 +23,25 @@ namespace Math
 			Varray[2] = v;
 		}
 
+		vector3D(double v)
+		{
+			Varray[0] = static_cast<float>(v);
+			Varray[1] = static_cast<float>(v);
+			Varray[2] = static_cast<float>(v);
+		}
+
 		vector3D(float x, float y, float z)
 		{
 			Varray[0] = x;
 			Varray[1] = y;
 			Varray[2] = z;
+		}
+
+		vector3D(double x, double y, double z)
+		{
+			Varray[0] = static_cast<float>(x);
+			Varray[1] = static_cast<float>(y);
+			Varray[2] = static_cast<float>(z);
 		}
 
 		~vector3D(void) = default;

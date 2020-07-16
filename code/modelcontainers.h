@@ -78,6 +78,10 @@ struct Material {
 	glTF primitive
 */
 struct Primitive {
+
+	Primitive(uint32_t firstIndex, uint32_t indexCount, uint32_t vertexCount, Material& material) : firstIndex(firstIndex), indexCount(indexCount), vertexCount(vertexCount), material(material) {
+		hasIndices = indexCount > 0;
+	};
 	uint32_t firstIndex;
 	uint32_t indexCount;
 	uint32_t vertexCount;
@@ -91,6 +95,9 @@ struct Primitive {
 struct Mesh {
 	std::vector<Primitive*> primitives;
 
+	Mesh()
+	{};
+
 	struct UniformBuffer {
 		VkBuffer buffer;
 		VkDeviceMemory memory;
@@ -101,8 +108,6 @@ struct Mesh {
 
 	struct UniformBlock {
 		Math::matrix4D matrix;
-		Math::matrix4D jointMatrix[MAX_NUM_JOINTS]{};
-		float jointcount{ 0 };
 	} uniformBlock;
 };
 
@@ -115,7 +120,7 @@ struct Node {
 	std::vector<Node*> children;
 	Math::matrix4D matrix;
 	std::string name;
-	Mesh* mesh;
+	Mesh mesh;
 	Math::vector3D translation{};
 	Math::vector3D scale{ 1.0f };
 	Math::vector4D rotation{};
@@ -127,9 +132,7 @@ struct Node {
 struct Vertex {
 	Math::vector3D pos;
 	Math::vector3D normal;
-	Math::vector2D uv0;
-	Math::vector2D uv1;
-	Math::vector4D joint0;
-	Math::vector4D weight0;
+	float uv0;
+	float uv1;
 };
 #endif // !_MODEL_CONTAINERS_H_

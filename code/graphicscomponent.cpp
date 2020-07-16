@@ -9,11 +9,12 @@ namespace Render
         CreateVertexBuffer();
         CreateIndexBuffer();
         mesh = new MeshResource();
-        mesh->LoadModel("resources/models/Cube/Cube.gltf", vInstance, vInstance->vkInstance->graphicsQueue);
+        mesh->LoadModel("resources/models/Cube/Cube.gltf", vInstance);
     }
 
     GraphicsComponent::~GraphicsComponent()
     {
+        delete(mesh);
         vkDestroyBuffer(pipeline->vkInstance->vDevice, vertexBuffer, nullptr);
         vkFreeMemory(pipeline->vkInstance->vDevice, vertexBufferMemory, nullptr);
 

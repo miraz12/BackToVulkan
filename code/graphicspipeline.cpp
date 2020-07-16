@@ -795,6 +795,9 @@ namespace Render
 				vkCmdBindPipeline(commandBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline);
 				VkBuffer vertexBuffers[] = { graphicsComp->vertexBuffer};
 				VkDeviceSize offsets[] = { 0 };
+
+				//graphicsComp->mesh->Draw(commandBuffers[i]);
+
 				vkCmdBindVertexBuffers(commandBuffers[i], 0, 1, vertexBuffers, offsets);
 				vkCmdBindIndexBuffer(commandBuffers[i], graphicsComp->indexBuffer, 0, VK_INDEX_TYPE_UINT32);
 

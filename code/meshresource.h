@@ -16,16 +16,20 @@ namespace Render
 	public:
 		MeshResource();
 		~MeshResource();
-		void LoadModel(std::string filename, GraphicsPipeline* pipe, VkQueue transferQueue, float scale = 1.0f);
+		void LoadModel(std::string filename, GraphicsPipeline* pipe, float scale = 1.0f);
+		void Draw(VkCommandBuffer commandBuffer);
 
 	private:
 		void LoadTextureSampler(tinygltf::Model& gltfModel);
 		VkFilter GetVkFilterMode(int32_t filterMode);
 		VkSamplerAddressMode GetVkWrapMode(int32_t wrapMode);
-		void LoadTextures(tinygltf::Model& gltfModel, VkQueue transferQueue);
-		void CreateTextureImage(Texture texture, tinygltf::Image& gltfimage, TextureSampler textureSampler);
+		void LoadTextures(tinygltf::Model& gltfModel);
+		void CreateTextureImage(Texture* texture, tinygltf::Image& gltfimage, TextureSampler textureSampler);
+		void LoadMaterials(tinygltf::Model& gltfModel);
+		void LoadNode(Node* parent, const tinygltf::Node& node, uint32_t nodeIndex, const tinygltf::Model& model, std::vector<uint32_t>& indexBuffer, std::vector<Vertex>& vertexBuffer, float globalscale);
+		void DrawNode(Node* node, VkCommandBuffer commandBuffer);
 
-		GraphicsPipeline* pipeline;
+		GraphicsPipeline* pipeline{nullptr};
 
 		struct Vertices {
 			VkBuffer buffer = VK_NULL_HANDLE;
