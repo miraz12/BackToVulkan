@@ -29,23 +29,10 @@ namespace Render
 		} indices;
 
 	private:
-		void LoadTextureSampler(tinygltf::Model& gltfModel);
-		VkFilter GetVkFilterMode(int32_t filterMode);
-		VkSamplerAddressMode GetVkWrapMode(int32_t wrapMode);
-		void LoadTextures(tinygltf::Model& gltfModel);
-		void CreateTextureImage(Texture* texture, tinygltf::Image& gltfimage, TextureSampler textureSampler);
-		void DrawNode(Node* node, VkCommandBuffer commandBuffer);
-		
-		
 		void CreateVertexBuffer(std::vector<Vertex> vertexBuffer);
 		void CreateIndexBuffer(std::vector<uint32_t> indexBuffer);
 
-		/*std::vector<Vertex> vertexBuffer;
-		std::vector<uint32_t> indexBuffer;*/
-
 		GraphicsPipeline* pipeline;
-
-
 
 		std::vector<Texture> textures;
 		std::vector<TextureSampler> textureSamplers;

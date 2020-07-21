@@ -100,31 +100,6 @@ namespace Render
 		vkCmdDrawIndexed(commandBuffer, static_cast<uint32_t>(indices.count), 1, 0, 0, 0);
 	}
 
-	void MeshResource::LoadTextureSampler(tinygltf::Model& gltfModel)
-	{
-
-	}
-
-	void MeshResource::LoadTextures(tinygltf::Model& gltfModel)
-	{
-
-	}
-	void MeshResource::CreateTextureImage(Texture* texture, tinygltf::Image& gltfimage, TextureSampler textureSampler)
-	{
-	
-	}
-	
-	void MeshResource::DrawNode(Node* node, VkCommandBuffer commandBuffer)
-	{
-		for (Primitive* primitive : node->mesh.primitives) 
-		{
- 			vkCmdDrawIndexed(commandBuffer, primitive->indexCount, 1, primitive->firstIndex, 0, 0);
-		}
-		for (auto& child : node->children) {
-			DrawNode(child, commandBuffer);
-		}
-	}
-
 	void Render::MeshResource::CreateVertexBuffer(std::vector<Vertex> vertexBuffer)
 	{
 		size_t vertexBufferSize = vertexBuffer.size() * sizeof(Vertex);
