@@ -245,11 +245,11 @@ namespace Render
 	{
 		static auto startTime = std::chrono::high_resolution_clock::now();
 
-		auto currentTime = std::chrono::high_resolution_clock::now();
+		auto currentTime = std::chrono::high_resolution_clock::now(); 
 		float time = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - startTime).count();
 		UniformBufferObject ubo{};
-		ubo.model = ubo.model.rot_z(time * 90.f);
-		ubo.view = ubo.view.LookAtRH(Math::vector3D(2.0f, 2.0f, 2.0f), Math::vector3D(0.0f, 0.0f, 0.0f), Math::vector3D(0.0f, 0.0f, 1.0f));
+		ubo.model = ubo.model.rot_y(time * 90.f * 0.5f);
+		ubo.view = ubo.view.LookAtRH(Math::vector3D(0.0f, 25.0f, -25.0f), Math::vector3D(0.0f, 0.0f, 0.0f), Math::vector3D(0.0f, 1.0f, 0.0f));
 		ubo.proj = ubo.proj.setPerspective(45.0f, vkInstance->swapChain.swapChainExtent.width / (float)vkInstance->swapChain.swapChainExtent.height, 0.1f, 10.0f);
 		ubo.proj[1][1] *= -1;
 
@@ -307,8 +307,8 @@ namespace Render
 
 			VkDescriptorImageInfo imageInfo{};
 			imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-			imageInfo.imageView = graphicsComp->texture->textureImageView;
-			imageInfo.sampler = graphicsComp->texture->textureSampler;
+			imageInfo.imageView = graphicsComp->mesh->textures[0].view;
+			imageInfo.sampler = graphicsComp->mesh->textures[0].sampler;
 
 			std::array<VkWriteDescriptorSet, 2> descriptorWrites{};
 

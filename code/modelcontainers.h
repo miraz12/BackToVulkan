@@ -13,6 +13,7 @@
 
 struct Node;
 
+
 /*
 	glTF texture sampler
 */
@@ -94,9 +95,19 @@ struct Primitive {
 */
 struct Mesh {
 	std::vector<Primitive*> primitives;
+	VkDevice device;
 
-	Mesh()
-	{};
+	Mesh(VkDevice d) : device(d)
+	{}
+	~Mesh()
+	{
+		vkDestroyBuffer(device, uniformBuffer.buffer, nullptr);
+		vkFreeMemory(device, uniformBuffer.memory, nullptr);
+
+		for (Primitive* p : primitives)
+			delete p;
+	}
+
 
 	struct UniformBuffer {
 		VkBuffer buffer;
@@ -115,12 +126,23 @@ struct Mesh {
 	glTF node
 */
 struct Node {
+
+	~Node()
+	{
+		if (mesh) {
+			delete mesh;
+		}
+		for (auto& child : children) {
+			delete child;
+		}
+	}
+
 	Node* parent;
 	uint32_t index;
 	std::vector<Node*> children;
 	Math::matrix4D matrix;
 	std::string name;
-	Mesh mesh;
+	Mesh* mesh;
 	Math::vector3D translation{};
 	Math::vector3D scale{ 1.0f };
 	Math::vector4D rotation{};
