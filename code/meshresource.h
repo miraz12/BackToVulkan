@@ -21,18 +21,19 @@ namespace Render
 		struct Vertices {
 			VkBuffer buffer = VK_NULL_HANDLE;
 			VkDeviceMemory memory;
-		} vertices;
+		} vertices{ 0 };
+
 		struct Indices {
 			int count;
 			VkBuffer buffer = VK_NULL_HANDLE;
 			VkDeviceMemory memory;
-		} indices;
+		} indices{ 0 };
 
 	private:
 		void CreateVertexBuffer(std::vector<Vertex> vertexBuffer);
 		void CreateIndexBuffer(std::vector<uint32_t> indexBuffer);
 
-		GraphicsPipeline* pipeline;
+		GraphicsPipeline* pipeline{nullptr};
 
 		std::vector<Texture> textures;
 		std::vector<TextureSampler> textureSamplers;

@@ -68,9 +68,9 @@ namespace Render
 				Vertex vertex{};
 
 				vertex.pos = {
-					attrib.vertices[3 * index.vertex_index + 0],
-					attrib.vertices[3 * index.vertex_index + 1],
-					attrib.vertices[3 * index.vertex_index + 2]
+					attrib.vertices[3 * index.vertex_index + 0] * scale,
+					attrib.vertices[3 * index.vertex_index + 1] * scale,
+					attrib.vertices[3 * index.vertex_index + 2] * scale
 				};
 
 				vertex.normal = { 1.0f, 1.0f, 1.0f };
@@ -81,12 +81,11 @@ namespace Render
 				};
 
 				vertexBuffer.push_back(vertex);
-				indexBuffer.push_back(indexBuffer.size());
+				indexBuffer.push_back(static_cast<uint32_t>(indexBuffer.size()));
 			}
 		}
 
 		size_t vertexBufferSize = vertexBuffer.size() * sizeof(Vertex);
-		size_t indexBufferSize = indexBuffer.size() * sizeof(uint32_t);
 		indices.count = static_cast<uint32_t>(indexBuffer.size());
 
 		assert(vertexBufferSize > 0);
