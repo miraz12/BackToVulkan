@@ -77,11 +77,12 @@ namespace Render
 
 				vertex.UV = {
 					attrib.texcoords[2 * index.texcoord_index + 0],
-					attrib.texcoords[2 * index.texcoord_index + 1]
+					1.0f - attrib.texcoords[2 * index.texcoord_index + 1]
 				};
 
+				
 				vertexBuffer.push_back(vertex);
-				indexBuffer.push_back(static_cast<uint32_t>(indexBuffer.size()));
+				indexBuffer.push_back(static_cast<uint32_t>(index.vertex_index)); //Todo: fix indices
 			}
 		}
 
