@@ -514,8 +514,8 @@ namespace Render
 		VkPipelineShaderStageCreateInfo shaderStages[2];
 		ShaderObject shaderObj = ShaderObject(vkInstance->vDevice, "resources/shaders/standardvert.spv", "resources/shaders/standardfrag.spv", shaderStages);
 
-		auto bindingDescription = GraphicsComponent::Vertex::getBindingDescription();
-		auto attributeDescriptions = GraphicsComponent::Vertex::getAttributeDescriptions();
+		auto bindingDescription = Vertex::getBindingDescription();
+		auto attributeDescriptions = Vertex::getAttributeDescriptions();
 
 		VkPipelineVertexInputStateCreateInfo vertexInputInfo{};
 		vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
@@ -793,17 +793,18 @@ namespace Render
 			vkCmdBeginRenderPass(commandBuffers[i], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
 
 				vkCmdBindPipeline(commandBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline);
-				VkBuffer vertexBuffers[] = { graphicsComp->vertexBuffer};
+				VkBuffer vertexBuffers[] = { graphicsComp->mesh->vertices.buffer};
 				VkDeviceSize offsets[] = { 0 };
 
-				//graphicsComp->mesh->Draw(commandBuffers[i]);
+				graphicsComp->mesh->BindBuffer(commandBuffers[i]);
 
-				vkCmdBindVertexBuffers(commandBuffers[i], 0, 1, vertexBuffers, offsets);
-				vkCmdBindIndexBuffer(commandBuffers[i], graphicsComp->indexBuffer, 0, VK_INDEX_TYPE_UINT32);
+				//vkCmdBindVertexBuffers(commandBuffers[i], 0, 1, vertexBuffers, offsets);
+				//vkCmdBindIndexBuffer(commandBuffers[i], graphicsComp->mesh->indices.buffer, 0, VK_INDEX_TYPE_UINT32);
 
 				vkCmdBindDescriptorSets(commandBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 1, &descriptorSets[i], 0, nullptr);
 
-				vkCmdDrawIndexed(commandBuffers[i], static_cast<uint32_t>(graphicsComp->indices.size()), 1, 0, 0, 0);
+				graphicsComp->mesh->Draw(commandBuffers[i]);
+				//vkCmdDrawIndexed(commandBuffers[i], static_cast<uint32_t>(graphicsComp->mesh->indices.count), 1, 0, 0, 0);
 
 			vkCmdEndRenderPass(commandBuffers[i]);
 

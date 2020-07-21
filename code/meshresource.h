@@ -7,8 +7,6 @@
 
 namespace Render
 {
-	// Changing this value here also requires changing it in the vertex shader
-
 	class GraphicsPipeline;
 
 	class MeshResource
@@ -16,20 +14,9 @@ namespace Render
 	public:
 		MeshResource();
 		~MeshResource();
+		void BindBuffer(VkCommandBuffer commandBuffer);
 		void LoadModel(std::string filename, GraphicsPipeline* pipe, float scale = 1.0f);
 		void Draw(VkCommandBuffer commandBuffer);
-
-	private:
-		void LoadTextureSampler(tinygltf::Model& gltfModel);
-		VkFilter GetVkFilterMode(int32_t filterMode);
-		VkSamplerAddressMode GetVkWrapMode(int32_t wrapMode);
-		void LoadTextures(tinygltf::Model& gltfModel);
-		void CreateTextureImage(Texture* texture, tinygltf::Image& gltfimage, TextureSampler textureSampler);
-		void LoadMaterials(tinygltf::Model& gltfModel);
-		void LoadNode(Node* parent, const tinygltf::Node& node, uint32_t nodeIndex, const tinygltf::Model& model, std::vector<uint32_t>& indexBuffer, std::vector<Vertex>& vertexBuffer, float globalscale);
-		void DrawNode(Node* node, VkCommandBuffer commandBuffer);
-
-		GraphicsPipeline* pipeline{nullptr};
 
 		struct Vertices {
 			VkBuffer buffer = VK_NULL_HANDLE;
@@ -41,18 +28,29 @@ namespace Render
 			VkDeviceMemory memory;
 		} indices;
 
-		std::vector<Node*> nodes;
-		std::vector<Node*> linearNodes;
+	private:
+		void LoadTextureSampler(tinygltf::Model& gltfModel);
+		VkFilter GetVkFilterMode(int32_t filterMode);
+		VkSamplerAddressMode GetVkWrapMode(int32_t wrapMode);
+		void LoadTextures(tinygltf::Model& gltfModel);
+		void CreateTextureImage(Texture* texture, tinygltf::Image& gltfimage, TextureSampler textureSampler);
+		void DrawNode(Node* node, VkCommandBuffer commandBuffer);
+		
+		
+		void CreateVertexBuffer(std::vector<Vertex> vertexBuffer);
+		void CreateIndexBuffer(std::vector<uint32_t> indexBuffer);
+
+		/*std::vector<Vertex> vertexBuffer;
+		std::vector<uint32_t> indexBuffer;*/
+
+		GraphicsPipeline* pipeline;
+
+
 
 		std::vector<Texture> textures;
 		std::vector<TextureSampler> textureSamplers;
-		std::vector<Material> materials;
 		std::vector<std::string> extensions;
 
-		struct Dimensions {
-			Math::vector3D min = Math::vector3D(FLT_MAX);
-			Math::vector3D max = Math::vector3D(-FLT_MAX);
-		} dimensions;
 	};
 }
 

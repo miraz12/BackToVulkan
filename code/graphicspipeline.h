@@ -35,6 +35,11 @@ namespace Render
 
 		//Vulkan instance
 		VulkanInstance* vkInstance{ nullptr };
+		//Vulkan pipeline layout
+		VkPipelineLayout pipelineLayout{ VK_NULL_HANDLE };
+
+		//Store this in appropriate ECS component later
+		GraphicsComponent* graphicsComp;
 
 	private:
 
@@ -54,9 +59,9 @@ namespace Render
 		
 		VkFormat FindDepthFormat();
 		bool HasStencilComponent(VkFormat format);
+		
 
-		//Vulkan pipeline layout
-		VkPipelineLayout pipelineLayout{ VK_NULL_HANDLE };
+
 		//Graphics pipeline
 		VkPipeline graphicsPipeline{ VK_NULL_HANDLE };
 		//Vulkan render pass
@@ -85,9 +90,8 @@ namespace Render
 		VkDescriptorPool descriptorPool;
 		//Vulkan descriptor sets
 		std::vector<VkDescriptorSet> descriptorSets;
-
+		
 		//Store this in appropriate ECS component later
-		GraphicsComponent* graphicsComp;
 		std::vector<VkBuffer> uniformBuffers;
 		std::vector<VkDeviceMemory> uniformBuffersMemory;
 
