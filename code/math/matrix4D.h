@@ -14,7 +14,36 @@ namespace Math
 
 
 		//2D array
-		float values2D[4][4];
+		float values2D[4][4] = {1, 0, 0, 0,
+								0, 1, 0, 0,
+								0, 0, 1, 0, 
+								0, 0, 0, 1};
+
+		inline matrix4D(float* arr)
+		{
+			int iter = 0;
+			for (size_t i = 0; i < 4; i++)
+			{
+				for (size_t j = 0; j < 4; j++)
+				{
+					values2D[i][j] = (arr)[iter];
+					iter++;
+				}
+			}
+		}
+
+		inline matrix4D(double* arr)
+		{
+			int iter = 0;
+			for (size_t i = 0; i < 4; i++)
+			{
+				for (size_t j = 0; j < 4; j++)
+				{
+					values2D[i][j] = static_cast<float>((arr)[iter]);
+					iter++;
+				}
+			}
+		}
 
 		inline matrix4D(matrix3D m)
 		{

@@ -35,7 +35,6 @@ namespace Render
 		}
 		materials.resize(0);
 		nodes.resize(0);
-		linearNodes.resize(0);
 		extensions.resize(0);
 	}
 
@@ -210,7 +209,7 @@ namespace Render
 		VkBuffer stagingBuffer;
 		VkDeviceMemory stagingBufferMemory;
 
-		VkFormat format = VK_FORMAT_R8G8B8A8_UNORM;
+		VkFormat format = VK_FORMAT_R8G8B8A8_SRGB;
 		texture->width = gltfimage.width;
 		texture->height = gltfimage.height;
 		texture->mipLevels = 0;// static_cast<uint32_t>(floor(log2(std::max(texture->width, texture->height))) + 1.0);
@@ -294,7 +293,7 @@ namespace Render
 				material.metallicFactor = static_cast<float>(mat.values["metallicFactor"].Factor());
 			}
 			if (mat.values.find("baseColorFactor") != mat.values.end()) {
-				material.baseColorFactor = Math::vector4D(*mat.values["baseColorFactor"].ColorFactor().data());
+				material.baseColorFactor = Math::vector4D(mat.values["baseColorFactor"].ColorFactor().data());
 			}
 			if (mat.additionalValues.find("normalTexture") != mat.additionalValues.end()) {
 				material.normalTexture = &textures[mat.additionalValues["normalTexture"].TextureIndex()];
@@ -371,6 +370,26 @@ namespace Render
 		newNode->matrix = Math::matrix4D();
 		newNode->mesh = nullptr;
 
+		// Generate local node matrix
+		Math::vector3D translation = Math::vector3D();
+		if (node.translation.size() == 3) {
+			translation = Math::vector3D(node.translation.data());
+			newNode->translation = translation;
+		}
+		Math::matrix4D rotation = Math::matrix4D();
+		if (node.rotation.size() == 4) {
+			//Todo: Implement quaternions for real
+		}
+		Math::vector3D scale = Math::vector3D();
+		if (node.scale.size() == 3) {
+			scale = Math::vector3D(node.translation.data());
+			newNode->scale = scale;
+		}
+		if (node.matrix.size() == 16) {
+			newNode->matrix = Math::matrix4D(node.matrix.data());
+		};
+
+
 		// Node with children
 		if (node.children.size() > 0) 
 		{
@@ -379,8 +398,6 @@ namespace Render
 				LoadNode(newNode, model.nodes[node.children[i]], node.children[i], model, indexBuffer, vertexBuffer, globalscale);
 			}
 		}
-
-		//TODO: load translation matrix
 
 		// Node contains mesh data
 		if (node.mesh > -1) 
@@ -398,8 +415,6 @@ namespace Render
 				uint32_t vertexStart = static_cast<uint32_t>(vertexBuffer.size());
 				uint32_t indexCount = 0;
 				uint32_t vertexCount = 0;
-				Math::vector3D posMin{};
-				Math::vector3D posMax{};
 				bool hasIndices = primitive.indices > -1;
 
 				// Vertices
@@ -416,8 +431,6 @@ namespace Render
 				tinygltf::Accessor& posAccessor = model.accessors[primitive.attributes.find("POSITION")->second];
 				tinygltf::BufferView& posView = model.bufferViews[posAccessor.bufferView];
 				bufferPos = reinterpret_cast<float*>(&(model.buffers[posView.buffer].data[posAccessor.byteOffset + posView.byteOffset]));
-				posMin = Math::vector3D(posAccessor.minValues[0], posAccessor.minValues[1], posAccessor.minValues[2]);
-				posMax = Math::vector3D(posAccessor.maxValues[0], posAccessor.maxValues[1], posAccessor.maxValues[2]);
 				vertexCount = static_cast<uint32_t>(posAccessor.count);
 				posByteStride = posAccessor.ByteStride(posView) ? (posAccessor.ByteStride(posView) / sizeof(float)) : tinygltf::GetNumComponentsInType(TINYGLTF_TYPE_VEC3);
 
@@ -511,7 +524,6 @@ namespace Render
 		{
 			nodes.push_back(newNode);
 		}
-		linearNodes.push_back(newNode);
 	}
 	void MeshResource::DrawNode(Node* node, VkCommandBuffer commandBuffer)
 	{

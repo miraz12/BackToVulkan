@@ -48,7 +48,6 @@ namespace Render
 		} indices;
 
 		std::vector<Node*> nodes;
-		std::vector<Node*> linearNodes;
 
 		std::vector<Texture> textures;
 		std::vector<TextureSampler> textureSamplers;

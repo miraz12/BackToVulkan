@@ -16,6 +16,14 @@ namespace Math
 			Varray[2] = 0;
 		}
 
+		vector3D(double* arr)
+		{
+			for (size_t i = 0; i < 3; i++)
+			{
+				Varray[i] = static_cast<float>((arr)[i]);
+			}
+		}
+
 		vector3D(float v)
 		{
 			Varray[0] = v;
