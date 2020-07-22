@@ -26,11 +26,15 @@ namespace Render
 		void CopyBufferToImage(VkBuffer buffer, VkImage image, uint32_t width, uint32_t height);
 		void CopyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size);
 		void CreateImage(uint32_t width, uint32_t height, VkFormat format,
-						 VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties, uint32_t mipLevels,
-						 VkImage& image, VkDeviceMemory& imageMemory);
+						VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties,
+						uint32_t mipLevels, VkSampleCountFlagBits numSamples, VkImage& image, VkDeviceMemory& imageMemory);
+
 		void TransitionImageLayout(VkImage image, VkFormat format, uint32_t mipLevels, VkImageLayout newLayout,
 								   VkImageLayout oldLayout = VK_IMAGE_LAYOUT_UNDEFINED);
+
 		void GenerateMipmaps(VkImage image, VkFormat imageFormat, int32_t texWidth, int32_t texHeight, uint32_t mipLevels);
+
+
 		void Cleanup();
 
 
@@ -57,6 +61,7 @@ namespace Render
 		void CreateDescriptorPool();
 		void CreateDescriptorSets();
 		void CreateDepthResources();
+		void CreateColorResources();
 		
 		VkFormat FindDepthFormat();
 		bool HasStencilComponent(VkFormat format);
@@ -85,6 +90,7 @@ namespace Render
 		//Current used fram
 		size_t currentFrame{ 0 };
 
+
 		//Vulkan descriptor set layout
 		VkDescriptorSetLayout descriptorSetLayout;
 		//Vulkan descriptor set pool 
@@ -95,6 +101,11 @@ namespace Render
 		//Store this in appropriate ECS component later
 		std::vector<VkBuffer> uniformBuffers;
 		std::vector<VkDeviceMemory> uniformBuffersMemory;
+
+		//MSAA
+		VkImage colorImage;
+		VkDeviceMemory colorImageMemory;
+		VkImageView colorImageView;
 
 		//Vulkan depth variables
 		VkImage depthImage;

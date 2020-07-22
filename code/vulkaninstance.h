@@ -51,7 +51,7 @@ namespace Render
 		uint32_t findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties);
 		VkImageView CreateImageView(VkImage image, VkFormat format, VkImageAspectFlags aspectFlags, uint32_t mipLevels);
 		VkFormat FindSupportedFormat(const std::vector<VkFormat>& candidates, VkImageTiling tiling, VkFormatFeatureFlags features);
-
+		VkSampleCountFlagBits GetMaxUsableSampleCount();
 		//GLFW windowPtr pointer
 		Display::Window* windowPtr{ nullptr };
 		//Vulkan instance
@@ -72,6 +72,8 @@ namespace Render
 		SwapChainVars swapChain{0};
 		//Number of swap chain images
 		uint32_t numImages{0};
+		//Supported number of MSAA samples
+		VkSampleCountFlagBits msaaSamples = VK_SAMPLE_COUNT_1_BIT;
 
 
 	private:

@@ -223,9 +223,10 @@ namespace Render
 		memcpy(data, buffer, static_cast<size_t>(bufferSize));
 		vkUnmapMemory(pipeline->vkInstance->vDevice, stagingBufferMemory);
 
-		pipeline->CreateImage(texture->width, texture->height, format, VK_IMAGE_TILING_OPTIMAL,
-			VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, texture->mipLevels,
-			texture->image, texture->deviceMemory);
+		pipeline->CreateImage(texture->width, texture->height, format,
+ VK_IMAGE_TILING_OPTIMAL,
+			VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
+ texture->mipLevels, VK_SAMPLE_COUNT_1_BIT, texture->image, texture->deviceMemory);
 
 		pipeline->TransitionImageLayout(texture->image, format, texture->mipLevels,
 			VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
