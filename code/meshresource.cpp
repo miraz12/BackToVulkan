@@ -212,7 +212,7 @@ namespace Render
 		VkFormat format = VK_FORMAT_R8G8B8A8_SRGB;
 		texture->width = gltfimage.width;
 		texture->height = gltfimage.height;
-		texture->mipLevels = 0;// static_cast<uint32_t>(floor(log2(std::max(texture->width, texture->height))) + 1.0);
+		texture->mipLevels = static_cast<uint32_t>(floor(log2(std::max(texture->width, texture->height))) + 1.0);
 
 		pipeline->CreateBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
 			VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
@@ -224,18 +224,18 @@ namespace Render
 		vkUnmapMemory(pipeline->vkInstance->vDevice, stagingBufferMemory);
 
 		pipeline->CreateImage(texture->width, texture->height, format, VK_IMAGE_TILING_OPTIMAL,
-			VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, 
+			VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, texture->mipLevels,
 			texture->image, texture->deviceMemory);
 
-		pipeline->TransitionImageLayout(texture->image, format,
+		pipeline->TransitionImageLayout(texture->image, format, texture->mipLevels,
 			VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
 
 		pipeline->CopyBufferToImage(stagingBuffer, texture->image, static_cast<uint32_t>(texture->width), static_cast<uint32_t>(texture->height));
 
-		pipeline->TransitionImageLayout(texture->image, format, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
-
 		vkDestroyBuffer(pipeline->vkInstance->vDevice, stagingBuffer, nullptr);
 		vkFreeMemory(pipeline->vkInstance->vDevice, stagingBufferMemory, nullptr);
+
+		pipeline->GenerateMipmaps(texture->image, format, texture->width, texture->height, texture->mipLevels); //Also transitions to VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL
 
 		texture->imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 
@@ -256,7 +256,7 @@ namespace Render
 		samplerInfo.mipmapMode = VK_SAMPLER_MIPMAP_MODE_LINEAR;
 		samplerInfo.mipLodBias = 0.0f;
 		samplerInfo.minLod = 0.0f;
-		samplerInfo.maxLod = 0.0f;
+		samplerInfo.maxLod = static_cast<float>(texture->mipLevels);
 
 		if (vkCreateSampler(pipeline->vkInstance->vDevice, &samplerInfo, nullptr, &texture->sampler) != VK_SUCCESS)
 		{
@@ -264,7 +264,7 @@ namespace Render
 		}
 
 		//Create image view
-		texture->view = pipeline->vkInstance->CreateImageView(texture->image, format, VK_IMAGE_ASPECT_COLOR_BIT);
+		texture->view = pipeline->vkInstance->CreateImageView(texture->image, format, VK_IMAGE_ASPECT_COLOR_BIT, texture->mipLevels);
 		texture->descriptor.imageView = texture->view;
 		texture->descriptor.sampler = texture->sampler;
 		texture->descriptor.imageLayout = texture->imageLayout;
@@ -382,7 +382,7 @@ namespace Render
 		}
 		Math::vector3D scale = Math::vector3D();
 		if (node.scale.size() == 3) {
-			scale = Math::vector3D(node.translation.data());
+			scale = Math::vector3D(node.scale.data());
 			newNode->scale = scale;
 		}
 		if (node.matrix.size() == 16) {

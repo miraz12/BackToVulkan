@@ -26,10 +26,11 @@ namespace Render
 		void CopyBufferToImage(VkBuffer buffer, VkImage image, uint32_t width, uint32_t height);
 		void CopyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size);
 		void CreateImage(uint32_t width, uint32_t height, VkFormat format,
-						 VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties,
+						 VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties, uint32_t mipLevels,
 						 VkImage& image, VkDeviceMemory& imageMemory);
-		void TransitionImageLayout(VkImage image, VkFormat format, VkImageLayout newLayout, 
+		void TransitionImageLayout(VkImage image, VkFormat format, uint32_t mipLevels, VkImageLayout newLayout,
 								   VkImageLayout oldLayout = VK_IMAGE_LAYOUT_UNDEFINED);
+		void GenerateMipmaps(VkImage image, VkFormat imageFormat, int32_t texWidth, int32_t texHeight, uint32_t mipLevels);
 		void Cleanup();
 
 

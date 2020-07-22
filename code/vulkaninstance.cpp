@@ -534,11 +534,11 @@ namespace Render
 
 		for (size_t i = 0; i < numImages; i++)
 		{
-			swapChain.swapChainImageViews[i] = CreateImageView(swapChain.swapChainImages[i], swapChain.swapChainImageFormat, VK_IMAGE_ASPECT_COLOR_BIT);
+			swapChain.swapChainImageViews[i] = CreateImageView(swapChain.swapChainImages[i], swapChain.swapChainImageFormat, VK_IMAGE_ASPECT_COLOR_BIT, 1);
 		}
 	}
 
-	VkImageView VulkanInstance::CreateImageView(VkImage image, VkFormat format, VkImageAspectFlags aspectFlags)
+	VkImageView VulkanInstance::CreateImageView(VkImage image, VkFormat format, VkImageAspectFlags aspectFlags, uint32_t mipLevels)
 	{
 		VkImageViewCreateInfo viewInfo{};
 		viewInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
@@ -547,7 +547,7 @@ namespace Render
 		viewInfo.format = format;
 		viewInfo.subresourceRange.aspectMask = aspectFlags;
 		viewInfo.subresourceRange.baseMipLevel = 0;
-		viewInfo.subresourceRange.levelCount = 1;
+		viewInfo.subresourceRange.levelCount = mipLevels;
 		viewInfo.subresourceRange.baseArrayLayer = 0;
 		viewInfo.subresourceRange.layerCount = 1;
 
