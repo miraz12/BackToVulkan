@@ -1,44 +1,13 @@
 #include <stdexcept>
 #include <cstdlib>
 #include <iostream>
-
-#include "render/window.h"
-
-class RenderApplication {
-public:
-	void Open()
-	{
-		win = new Display::Window();
-		win->Open();
-	}
-
-	void Run()
-	{
-		while (!glfwWindowShouldClose(win->window))
-		{
-			win->Update();
-		}
-
-		Close();
-	}
-
-	void Close()
-	{
-		
-		win->Close();
-	}
-
-private:
-	
-	Display::Window* win;
-};
+#include "renderapplication.h"
 
 int main()
 {
-
 	try 
 	{
-		RenderApplication app = RenderApplication();
+		Application::RenderApplication app = Application::RenderApplication();
 		app.Open();
 		app.Run();
 	}
@@ -47,6 +16,5 @@ int main()
 		std::cerr << e.what() << std::endl;
 		return EXIT_FAILURE;
 	}
-
 	return 0;
 }

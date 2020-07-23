@@ -62,7 +62,7 @@ App::Close()
 void
 App::Exit()
 {
-	
+
 }
 
 } // namespace Application

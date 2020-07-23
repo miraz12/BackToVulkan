@@ -13,8 +13,8 @@ source_group("source" FILES ${project_sources})
 
 ADD_EXECUTABLE(example ${files_project})
 
-TARGET_LINK_LIBRARIES(example PUBLIC render)
-ADD_DEPENDENCIES(example render)
+TARGET_LINK_LIBRARIES(example PUBLIC render core)
+ADD_DEPENDENCIES(example render core)
 
 # Pre build command, compile shaders
 if(WIN32)
