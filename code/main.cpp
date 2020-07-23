@@ -1,5 +1,4 @@
 #include <stdexcept>
-#include <cstdlib>
 #include <iostream>
 #include "renderapplication.h"
 

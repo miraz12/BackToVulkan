@@ -8,12 +8,17 @@ SET(files_core
 SOURCE_GROUP("core" FILES ${files_core})
 
 FILE(GLOB math_headers math/*.h)
-FILE(GLOB math_sources math/*.cc)
 SET(files_math 
-	${math_headers}
-	${math_sources})
+	${math_headers})
 SOURCE_GROUP("math" FILES ${files_math})
 
-ADD_LIBRARY(core STATIC ${files_core} ${files_math} )
+FILE(GLOB input_headers input/*.h)
+FILE(GLOB input_sources input/*.cpp)
+SET(files_input
+	${input_headers}
+	${input_sources})
+SOURCE_GROUP("input" FILES ${files_input})
+
+ADD_LIBRARY(core STATIC ${files_core} ${files_math} ${files_input})
 ADD_DEPENDENCIES(core exts)
 TARGET_LINK_LIBRARIES(core PUBLIC engine exts)

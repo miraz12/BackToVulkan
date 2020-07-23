@@ -2,7 +2,8 @@
 #define _RENDER_APPLICATION_H_
 
 #include "core/app.h"
-#include "render/window.h"
+#include "render/window.h" 
+#include "render/camera.h"
 
 namespace Application
 {
@@ -23,6 +24,7 @@ namespace Application
 	private:
 
 		Display::Window* win{ nullptr };
+		Display::CameraView* camera{ nullptr };
 	};
 
 }
