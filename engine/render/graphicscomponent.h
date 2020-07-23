@@ -6,8 +6,8 @@
 
 #include "textureresource.h"
 #include "meshresource.h"
-#include "math/vector3D.h"
-#include "math/vector2D.h"
+#include "core/math/vector3D.h"
+#include "core/math/vector2D.h"
 
 namespace Render
 {

@@ -7,7 +7,7 @@ namespace Math
 	class vector3D
 	{
 	public:
-		float Varray[3];
+		float Varray[3] = { 0, 0, 0};
 
 		vector3D()
 		{

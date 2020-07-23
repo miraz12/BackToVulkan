@@ -1,6 +1,6 @@
 #include "meshresource.h"
 #include "graphicspipeline.h"
-#include "math/quaternion.h"
+#include "core/math/quaternion.h"
 
 namespace Render
 {

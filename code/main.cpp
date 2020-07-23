@@ -2,7 +2,7 @@
 #include <cstdlib>
 #include <iostream>
 
-#include "window.h"
+#include "render/window.h"
 
 class RenderApplication {
 public:

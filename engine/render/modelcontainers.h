@@ -1,7 +1,7 @@
 #ifndef _MODEL_CONTAINERS_H_
 #define _MODEL_CONTAINERS_H_
-#include "math/matrix4D.h"
-#include "math/vector2D.h"
+#include "core/math/matrix4D.h"
+#include "core/math/vector2D.h"
 
 
 #include "tiny_gltf.h"

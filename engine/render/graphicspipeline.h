@@ -4,7 +4,7 @@
 #include "shaderobject.h"
 #include "vulkaninstance.h"
 #include "graphicscomponent.h"
-#include "math/matrix4D.h"
+#include "core/math/matrix4D.h"
 
 namespace Render
 {
