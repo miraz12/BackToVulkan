@@ -142,57 +142,6 @@ namespace Math
 
 		}
 
-
-		// matrix4D LookAtRH(vector3D eye, vector3D target, vector3D up)
-		// {
-		// 	vector3D zaxis = (eye - target).normalize();    // The "forward" vector.
-		// 	vector3D xaxis = (up.cross(zaxis)).normalize();// The "right" vector.
-		// 	vector3D yaxis = zaxis.cross(xaxis);     // The "up" vector.
-		//
-		// 	// Create a 4x4 orientation matrix from the right, up, and forward vectors
-		// 	// This is transposed which is equivalent to performing an inverse
-		// 	// if the matrix is orthonormalized (in this case, it is).
-		//
-		// 	matrix4D orientation;
-		//
-		// 		orientation[0][0] = xaxis[0];
-		// 		orientation[0][1] = xaxis[1];
-		// 		orientation[0][2] = xaxis[2];
-		// 		orientation[0][3] = 0;
-		//
-		// 		orientation[1][0] = yaxis[0];
-		// 		orientation[1][1] = yaxis[1];
-		// 		orientation[1][2] = yaxis[2];
-		// 		orientation[1][3] = 0;
-		//
-		// 		orientation[2][0] = zaxis[0];
-		// 		orientation[2][1] = zaxis[1];
-		// 		orientation[2][2] = zaxis[2];
-		// 		orientation[2][3] = 0;
-		//
-		// 		orientation[3][0] = 0;
-		// 		orientation[3][1] = 0;
-		// 		orientation[3][2] = 0;
-		// 		orientation[3][3] = 1;
-		//
-		//
-		// 	// Create a 4x4 translation matrix.
-		// 	// The eye position is negated which is equivalent
-		// 	// to the inverse of the translation matrix.
-		// 	// T(v)^-1 == T(-v)
-		// 		matrix4D translation;
-		//
-		// 		values2D[3][0] = -(eye[0]);
-		// 		values2D[3][1] = -(eye[1]);
-		// 		values2D[3][2] = -(eye[2]);
-		//
-		//
-		// 	// Combine the orientation and translation to compute
-		// 	// the final view matrix
-		// 	return (orientation * translation);
-		// }
-
-
 		inline vector4D transform(vector4D v)
 		{
 			vector4D res;
@@ -301,49 +250,6 @@ namespace Math
 
 		matrix4D LookAtRH(vector3D eye, vector3D target, vector3D up)
 		{
-
-			/*    vector3D zaxis = (eye - target);
-				zaxis.normalize();
-				vector3D xaxis = (up.cross(zaxis));// The "right" vector.
-				xaxis.normalize();
-				vector3D yaxis = zaxis.cross(xaxis);    // The "forward" vector.
-
-				matrix4D orientation;
-
-				orientation[0][0] = xaxis[0];
-				orientation[1][0] = xaxis[1];
-				orientation[2][0] = xaxis[2];
-				orientation[3][0] = 0;
-
-				orientation[0][1] = yaxis[0];
-				orientation[1][1] = yaxis[1];
-				orientation[2][1] = yaxis[2];
-				orientation[3][1] = 0;
-
-				orientation[0][2] = zaxis[0];
-				orientation[1][2] = zaxis[1];
-				orientation[2][2] = zaxis[2];
-				orientation[3][2] = 0;
-
-				orientation[0][3] = 0.0f;
-				orientation[1][3] = 0.0f;
-				orientation[2][3] = 0.0f;
-				orientation[3][3] = 1.0f;
-
-				matrix4D translation;
-
-				translation[0][3] = -eye[0];
-				translation[1][3] = -eye[1];
-				translation[2][3] = -eye[2];
-				translation[3][3] = 1.0f;
-
-				matrix4D viewMatrix;
-				viewMatrix = orientation * translation;
-
-				~viewMatrix;
-				return  viewMatrix;*/
-
-
 			vector3D zaxis = (eye - target);
 			zaxis.normalize();
 			vector3D normUp = up.normalizeRe();
@@ -356,26 +262,6 @@ namespace Math
 			// Create a 4x4 view matrix from the right, up, forward and eye position vectors
 			matrix4D viewMatrix;
 
-			/*
-			viewMatrix[0][0] =
-			viewMatrix[0][1] =
-			viewMatrix[0][2] =
-			viewMatrix[0][3] =
-
-			viewMatrix[1][0] =
-			viewMatrix[1][1] =
-			viewMatrix[1][2] =
-			viewMatrix[1][3] =
-
-			viewMatrix[2][0] =
-			viewMatrix[2][1] =
-			viewMatrix[2][2] =
-			viewMatrix[2][3] =
-
-			viewMatrix[3][0] =
-			viewMatrix[3][1] =
-			viewMatrix[3][2] =
-			viewMatrix[3][3] = */
 
 			viewMatrix[0][0] = xaxis[0];
 			viewMatrix[1][0] = xaxis[1];
@@ -403,10 +289,6 @@ namespace Math
 		matrix4D setPerspective(float fovY, float aspect, float zNear, float zFar)
 		{
 			matrix4D temp;
-
-			//float halfFov = 0.5f * fovY;
-			//float sinFov = sin(halfFov);
-			//float cosFov = cos(halfFov);
 
 			float D2R = PI / 180.0f;
 			float height = 1.0f / tan(D2R * fovY / 2);
@@ -438,35 +320,6 @@ namespace Math
 
 			return temp;
 
-
-			/*
-
-			const float zRange = zNear - zFar;
-			const float tanHalfFOV = tanf((PI / 180.0f)*(fovY * 0.5f));
-
-			temp[0][0] = 1.0f / (tanHalfFOV * aspect);
-			temp[0][1] = 0.0f;
-			temp[0][2] = 0.0f;
-			temp[0][3] = 0.0f;
-
-			temp[1][0] = 0.0f;
-			temp[1][1] = 1.0f / tanHalfFOV;
-			temp[1][2] = 0.0f;
-			temp[1][3] = 0.0f;
-
-			temp[2][0] = 0.0f;
-			temp[2][1] = 0.0f;
-			temp[2][2] = ((-zNear) - zFar) / zRange;
-			temp[2][3] = 2.0f * zFar * zNear / zRange;
-
-			temp[3][0] = 0.0f;
-			temp[3][1] = 0.0f;
-			temp[3][2] = 1.0f;
-			temp[3][3] = 0.0f;
-		*/
-
-		// params: left, right, bottom, top, near, far
-	//	return temp;
 		}
 
 		inline float* get()

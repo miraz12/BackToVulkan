@@ -5,6 +5,7 @@
 #include "vulkaninstance.h"
 #include "graphicscomponent.h"
 #include "core/math/matrix4D.h"
+#include "camera.h"
 
 namespace Render
 {
@@ -66,8 +67,8 @@ namespace Render
 		VkFormat FindDepthFormat();
 		bool HasStencilComponent(VkFormat format);
 		
-
-
+		//Camera used for rendering
+		Display::CameraView* camera;
 		//Graphics pipeline
 		VkPipeline graphicsPipeline{ VK_NULL_HANDLE };
 		//Vulkan render pass

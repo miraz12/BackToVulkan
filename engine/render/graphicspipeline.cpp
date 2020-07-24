@@ -8,6 +8,7 @@ namespace Render
 {
 	GraphicsPipeline::GraphicsPipeline(VulkanInstance* vkInstance)
 	{
+		camera = Display::CameraView::GetInstance();
 		this->vkInstance = vkInstance;
 		CreateRenderPass();
 		CreateDescriptorSetLayout();
@@ -255,9 +256,12 @@ namespace Render
 		float time = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - startTime).count();
 		UniformBufferObject ubo{};
 		ubo.model = ubo.model.rot_y(time * 90.f * 0.5f);
-		ubo.view = ubo.view.LookAtRH(Math::vector3D(0.0f, 25.0f, 25.0f), Math::vector3D(0.0f, 0.0f, 0.0f), Math::vector3D(0.0f, 1.0f, 0.0f));
-		ubo.proj = ubo.proj.setPerspective(45.0f, vkInstance->swapChain.swapChainExtent.width / (float)vkInstance->swapChain.swapChainExtent.height, 0.1f, 10.0f);
-		ubo.proj[1][1] *= -1;
+		ubo.view = camera->view;
+		ubo.proj = camera->projection;
+
+		//ubo.view = ubo.view.LookAtRH(Math::vector3D(0.0f, 25.0f, 25.0f), Math::vector3D(0.0f, 0.0f, 0.0f), Math::vector3D(0.0f, 1.0f, 0.0f));
+		//ubo.proj = ubo.proj.setPerspective(45.0f, vkInstance->swapChain.swapChainExtent.width / (float)vkInstance->swapChain.swapChainExtent.height, 0.1f, 10.0f);
+		//ubo.proj[1][1] *= -1;
 
 		void* data;
 		vkMapMemory(vkInstance->vDevice, uniformBuffersMemory[currentImage], 0, sizeof(ubo), 0, &data);

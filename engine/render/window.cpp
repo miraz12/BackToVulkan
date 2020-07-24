@@ -13,7 +13,6 @@ namespace Display
 	{
 		//empty
 	}
-
 	bool Window::Open()
 	{
 		if (windowCount == 0)
@@ -22,7 +21,13 @@ namespace Display
 		glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
 		window = glfwCreateWindow(width, height, title, nullptr, nullptr);
 		glfwSetWindowUserPointer(window, this);
-		glfwSetFramebufferSizeCallback(window, framebufferResizeCallback);
+
+		glfwSetKeyCallback(this->window, Window::StaticKeyPressCallback);
+		glfwSetMouseButtonCallback(this->window, Window::StaticMousePressCallback);
+		glfwSetCursorPosCallback(this->window, Window::StaticMouseMoveCallback);
+		glfwSetCursorEnterCallback(this->window, Window::StaticMouseEnterLeaveCallback);
+		glfwSetScrollCallback(this->window, Window::StaticMouseScrollCallback);
+		glfwSetWindowSizeCallback(this->window, Window::StaticWindowSizeCallback);
 
 		instance = new Render::VulkanInstance(this);
 		instance->InitVulkan();
@@ -30,7 +35,6 @@ namespace Display
 
 		return true;
 	}
-
 	void Window::Close()
 	{
 		pipeline->Cleanup();
@@ -38,7 +42,6 @@ namespace Display
 		glfwDestroyWindow(window);
 		glfwTerminate();
 	}
-
 	void Window::Update()
 	{
 		glfwPollEvents();
@@ -50,7 +53,6 @@ namespace Display
 
 		pipeline->DrawFrame();
 	}
-
 	void Window::SwapBuffers()
 	{
 		glfwSwapBuffers(window);
@@ -71,6 +73,37 @@ namespace Display
 	const char** Window::GetRequiredExtensions(uint32_t* count)
 	{
 		return glfwGetRequiredInstanceExtensions(count);
+	}
+	void Window::StaticKeyPressCallback(GLFWwindow* window, int key, int scancode, int action, int mods)
+	{
+		auto app = reinterpret_cast<Window*>(glfwGetWindowUserPointer(window));
+		if (nullptr != app->keyPressCallback) app->keyPressCallback(key, scancode, action, mods);
+	}
+	void Window::StaticMousePressCallback(GLFWwindow* window, int button, int action, int mods)
+	{
+		auto app = reinterpret_cast<Window*>(glfwGetWindowUserPointer(window));
+		if (nullptr != app->mousePressCallback) app->mousePressCallback(button, action, mods);
+	}
+	void Window::StaticMouseMoveCallback(GLFWwindow* window, double x, double y)
+	{
+		auto app = reinterpret_cast<Window*>(glfwGetWindowUserPointer(window));
+		if (nullptr != app->mouseMoveCallback) app->mouseMoveCallback(x, y);
+	}
+	void Window::StaticMouseEnterLeaveCallback(GLFWwindow* window, int mode)
+	{
+		auto app = reinterpret_cast<Window*>(glfwGetWindowUserPointer(window));
+		if (nullptr != app->mouseLeaveEnterCallback) app->mouseLeaveEnterCallback(mode == 0);
+	}
+	void Window::StaticMouseScrollCallback(GLFWwindow* window, double x, double y)
+	{
+		auto app = reinterpret_cast<Window*>(glfwGetWindowUserPointer(window));
+		if (nullptr != app->mouseScrollCallback) app->mouseScrollCallback(x, y);
+	}
+	void Window::StaticWindowSizeCallback(GLFWwindow* window, int width, int height)
+	{
+		width, height;
+		auto app = reinterpret_cast<Window*>(glfwGetWindowUserPointer(window));
+		app->frambufferResize = true;
 	}
 }
 

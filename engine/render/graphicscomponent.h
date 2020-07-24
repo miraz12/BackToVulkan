@@ -4,7 +4,6 @@
 #include <array>
 #include <vulkan/vulkan.h>
 
-#include "textureresource.h"
 #include "meshresource.h"
 #include "core/math/vector3D.h"
 #include "core/math/vector2D.h"
@@ -20,7 +19,6 @@ namespace Render
 		GraphicsComponent() = default;
 		~GraphicsComponent();
 
-		TextureResource* texture{ nullptr };
 		MeshResource* mesh{ nullptr };
 
 	private:

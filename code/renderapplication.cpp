@@ -5,7 +5,9 @@ namespace Application
 {
 	RenderApplication::RenderApplication()
 	{
-		// empty
+		win = new Display::Window();
+		camera = Display::CameraView::GetInstance();
+		keyHandler = Input::KeyHandler::GetInstance();
 	}
 
 	RenderApplication::~RenderApplication()
@@ -15,7 +17,8 @@ namespace Application
 
 	bool RenderApplication::Open()
 	{
-		win = new Display::Window();
+		keyHandler->Init(win);
+		
 		if (win->Open())
 		{
 
@@ -30,6 +33,7 @@ namespace Application
 		while (!glfwWindowShouldClose(win->window))
 		{
 			win->Update();
+			camera->UpdateCamera(win->width, win->height);
 		}
 
 		Close();

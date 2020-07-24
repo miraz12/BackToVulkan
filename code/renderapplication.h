@@ -4,6 +4,7 @@
 #include "core/app.h"
 #include "render/window.h" 
 #include "render/camera.h"
+#include "core/input/keyhandler.h"
 
 namespace Application
 {
@@ -25,6 +26,7 @@ namespace Application
 
 		Display::Window* win{ nullptr };
 		Display::CameraView* camera{ nullptr };
+		Input::KeyHandler* keyHandler{ nullptr };
 	};
 
 }
