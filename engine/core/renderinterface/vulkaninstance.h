@@ -11,7 +11,7 @@ namespace Display
 	class Window;
 }
 
-namespace Render
+namespace Core
 {
 	struct SwapChainVars
 	{

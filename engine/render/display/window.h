@@ -6,9 +6,14 @@
 #include <cstdint>
 #include <functional>
 
-namespace Render
+
+namespace Core
 {
 	class VulkanInstance;
+}
+namespace Render
+{
+
 	class RenderServer;
 }
 
@@ -55,7 +60,7 @@ namespace Display
 		//State for when frambuffer is resized
 		bool frambufferResize{ false };
 
-		Render::VulkanInstance* instance;
+		Core::VulkanInstance* instance;
 		Render::RenderServer* pipeline;
 
 		/// static key press callback

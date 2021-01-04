@@ -23,7 +23,7 @@ const bool enableValidationLayers = false;
 const bool enableValidationLayers = true;
 #endif
 
-namespace Render
+namespace Core
 {
 	//TODO: Maybe move this stuff to separate file? One file for all extension functions and callbacks maybe? 
 	VkResult CreateDebugUtilsMessengerEXT(VkInstance instance,

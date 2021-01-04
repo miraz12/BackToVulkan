@@ -30,7 +30,7 @@ namespace Display
 		glfwSetScrollCallback(this->window, Window::StaticMouseScrollCallback);
 		glfwSetWindowSizeCallback(this->window, Window::StaticWindowSizeCallback);
 
-		instance = new Render::VulkanInstance(this);
+		instance = new Core::VulkanInstance(this);
 		instance->InitVulkan();
 		pipeline = new Render::RenderServer(instance);
 
