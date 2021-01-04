@@ -9,7 +9,7 @@
 namespace Render
 {
 	class VulkanInstance;
-	class GraphicsPipeline;
+	class RenderServer;
 }
 
 namespace Display
@@ -56,7 +56,7 @@ namespace Display
 		bool frambufferResize{ false };
 
 		Render::VulkanInstance* instance;
-		Render::GraphicsPipeline* pipeline;
+		Render::RenderServer* pipeline;
 
 		/// static key press callback
 		static void StaticKeyPressCallback(GLFWwindow* win, int key, int scancode, int action, int mods);

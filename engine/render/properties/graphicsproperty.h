@@ -10,12 +10,12 @@
 
 namespace Render
 {
-	class GraphicsPipeline;
+	class RenderServer;
 
 	class GraphicsProperty
 	{
 	public:
-		GraphicsProperty(GraphicsPipeline * vInstance);
+		GraphicsProperty(RenderServer * vInstance);
 		GraphicsProperty() = default;
 		~GraphicsProperty();
 
@@ -24,7 +24,7 @@ namespace Render
 	private:
 
 
-		GraphicsPipeline* pipeline;
+		RenderServer* pipeline;
 	};
 }
 

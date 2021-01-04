@@ -1,5 +1,5 @@
 #include "meshresource.h"
-#include "render/servers/graphicspipeline.h"
+#include "render/servers/renderserver.h"
 #include "core/math/quaternion.h"
 
 #define STB_IMAGE_IMPLEMENTATION
@@ -53,7 +53,7 @@ namespace Render
 		vkCmdBindIndexBuffer(commandBuffer, indices.buffer, 0, VK_INDEX_TYPE_UINT32);
 	}
 
-	void MeshResource::LoadModel(std::string filename, GraphicsPipeline* pipe, float scale)
+	void MeshResource::LoadModel(std::string filename, RenderServer* pipe, float scale)
 	{
 		tinygltf::Model gltfModel;
 		tinygltf::TinyGLTF gltfContext;

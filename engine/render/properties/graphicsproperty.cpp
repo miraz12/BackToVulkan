@@ -1,9 +1,9 @@
 #include "graphicsproperty.h"
-#include "render/servers/graphicspipeline.h"
+#include "render/servers/renderserver.h"
 
 namespace Render
 {
-    GraphicsProperty::GraphicsProperty(GraphicsPipeline * vInstance) : pipeline(vInstance)
+    GraphicsProperty::GraphicsProperty(RenderServer * vInstance) : pipeline(vInstance)
     {
         mesh = new MeshResource();
         mesh->LoadModel("resources/models/GLTF/viking_room/scene.gltf", vInstance);

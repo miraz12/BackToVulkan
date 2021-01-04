@@ -1,5 +1,5 @@
 #include "core/renderinterface/vulkaninstance.h"
-#include "render/servers/graphicspipeline.h"
+#include "render/servers/renderserver.h"
 #include "window.h"
 
 namespace Display
@@ -32,7 +32,7 @@ namespace Display
 
 		instance = new Render::VulkanInstance(this);
 		instance->InitVulkan();
-		pipeline = new Render::GraphicsPipeline(instance);
+		pipeline = new Render::RenderServer(instance);
 
 		return true;
 	}

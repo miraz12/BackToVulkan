@@ -7,7 +7,7 @@
 
 namespace Render
 {
-	class GraphicsPipeline;
+	class RenderServer;
 	class GraphicsProperty;
 
 	class MeshResource
@@ -16,7 +16,7 @@ namespace Render
 		MeshResource();
 		~MeshResource();
 		void BindBuffer(VkCommandBuffer commandBuffer);
-		void LoadModel(std::string filename, GraphicsPipeline* pipe, float scale = 1.0f);
+		void LoadModel(std::string filename, RenderServer* pipe, float scale = 1.0f);
 		void Draw(VkCommandBuffer commandBuffer);
 
 	private:
@@ -33,7 +33,7 @@ namespace Render
 		void CreateVertexBuffer(std::vector<Vertex> vertexBuffer);
 		void CreateIndexBuffer(std::vector<uint32_t> indexBuffer);
 
-		GraphicsPipeline* pipeline{nullptr};
+		RenderServer* pipeline{nullptr};
 		GraphicsProperty* gComp{ nullptr };
 
 	public:
