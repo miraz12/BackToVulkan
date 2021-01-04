@@ -1,9 +1,9 @@
 #ifndef _GRAPHICS_PIPELINE_H_
 #define _GRAPHICS_PIPELINE_H_
 
-#include "render/resources/shaderobject.h"
+#include "render/resources/shaderresource.h"
 #include "core/renderinterface/vulkaninstance.h"
-#include "render/properties/graphicscomponent.h"
+#include "render/properties/graphicsproperty.h"
 #include "core/math/matrix4D.h"
 #include "render/display/camera.h"
 
@@ -45,7 +45,7 @@ namespace Render
 		VkPipelineLayout pipelineLayout{ VK_NULL_HANDLE };
 
 		//Store this in appropriate ECS component later
-		GraphicsComponent* graphicsComp;
+		GraphicsProperty* graphicsComp;
 
 	private:
 

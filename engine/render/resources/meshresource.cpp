@@ -1,5 +1,5 @@
 #include "meshresource.h"
-#include "graphicspipeline.h"
+#include "render/servers/graphicspipeline.h"
 #include "core/math/quaternion.h"
 
 #define STB_IMAGE_IMPLEMENTATION

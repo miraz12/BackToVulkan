@@ -8,7 +8,7 @@
 namespace Render
 {
 	class GraphicsPipeline;
-	class GraphicsComponent;
+	class GraphicsProperty;
 
 	class MeshResource
 	{
@@ -34,7 +34,7 @@ namespace Render
 		void CreateIndexBuffer(std::vector<uint32_t> indexBuffer);
 
 		GraphicsPipeline* pipeline{nullptr};
-		GraphicsComponent* gComp{ nullptr };
+		GraphicsProperty* gComp{ nullptr };
 
 	public:
 		struct Vertices {

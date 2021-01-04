@@ -2,8 +2,8 @@
 #define _RENDER_APPLICATION_H_
 
 #include "core/app.h"
-#include "render/window.h" 
-#include "render/camera.h"
+#include "render/display/window.h" 
+#include "render/display/camera.h"
 #include "core/input/keyhandler.h"
 
 namespace Application

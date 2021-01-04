@@ -8,12 +8,12 @@
 
 namespace Render
 {
-	class ShaderObject
+	class shaderresource
 	{
 	public:
-		ShaderObject() = default;
-		ShaderObject(VkDevice vDevice, const std::string& vertex, const std::string& fragment, VkPipelineShaderStageCreateInfo shaderStages[]);
-		~ShaderObject();
+		shaderresource() = default;
+		shaderresource(VkDevice vDevice, const std::string& vertex, const std::string& fragment, VkPipelineShaderStageCreateInfo shaderStages[]);
+		~shaderresource();
 
 	private:
 		static std::vector<char> readFile(const std::string& filename);

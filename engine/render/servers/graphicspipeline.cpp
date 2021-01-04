@@ -17,7 +17,7 @@ namespace Render
 		CreateColorResources();
 		CreateDepthResources();
 		CreateFramebuffers();
-		graphicsComp = new GraphicsComponent(this); //Break this out when implementing ECS
+		graphicsComp = new GraphicsProperty(this); //Break this out when implementing ECS
 		CreateUniformBuffers();
 		CreateDescriptorPool();
 		CreateDescriptorSets();
@@ -625,7 +625,7 @@ namespace Render
 	{
 
 		VkPipelineShaderStageCreateInfo shaderStages[2];
-		ShaderObject shaderObj = ShaderObject(vkInstance->vDevice, "resources/shaders/standardvert.spv", "resources/shaders/standardfrag.spv", shaderStages);
+		shaderresource shaderObj = shaderresource(vkInstance->vDevice, "resources/shaders/standardvert.spv", "resources/shaders/standardfrag.spv", shaderStages);
 
 		auto bindingDescription = Vertex::getBindingDescription();
 		auto attributeDescriptions = Vertex::getAttributeDescriptions();

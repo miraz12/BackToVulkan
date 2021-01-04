@@ -1,10 +1,10 @@
-#include "shaderobject.h"
+#include "shaderresource.h"
 #include <fstream>
 
 namespace Render
 {
 
-	ShaderObject::ShaderObject(VkDevice vDevice, const std::string& vertex, const std::string& fragment, VkPipelineShaderStageCreateInfo shaderStages[])
+	shaderresource::shaderresource(VkDevice vDevice, const std::string& vertex, const std::string& fragment, VkPipelineShaderStageCreateInfo shaderStages[])
 	{
 		this->vDevice = vDevice;
 		auto vertShaderCode = readFile(vertex);
@@ -30,13 +30,13 @@ namespace Render
 
 	}
 
-	ShaderObject::~ShaderObject()
+	shaderresource::~shaderresource()
 	{
 		vkDestroyShaderModule(vDevice, fragShaderModule, nullptr);
 		vkDestroyShaderModule(vDevice, vertShaderModule, nullptr);
 	}
 
-	std::vector<char> ShaderObject::readFile(const std::string& filename)
+	std::vector<char> shaderresource::readFile(const std::string& filename)
 	{
 		std::ifstream file(filename, std::ios::ate | std::ios::binary);
 
@@ -55,7 +55,7 @@ namespace Render
 		return buffer;
 	}
 
-	VkShaderModule ShaderObject::createShaderModule(const std::vector<char>& code)
+	VkShaderModule shaderresource::createShaderModule(const std::vector<char>& code)
 	{
 		VkShaderModuleCreateInfo createInfo{};
 		createInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;

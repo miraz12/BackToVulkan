@@ -12,12 +12,12 @@ namespace Render
 {
 	class GraphicsPipeline;
 
-	class GraphicsComponent
+	class GraphicsProperty
 	{
 	public:
-		GraphicsComponent(GraphicsPipeline * vInstance);
-		GraphicsComponent() = default;
-		~GraphicsComponent();
+		GraphicsProperty(GraphicsPipeline * vInstance);
+		GraphicsProperty() = default;
+		~GraphicsProperty();
 
 		MeshResource* mesh{ nullptr };
 
