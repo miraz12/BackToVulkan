@@ -19,6 +19,19 @@ SET(files_input
 	${input_sources})
 SOURCE_GROUP("input" FILES ${files_input})
 
-ADD_LIBRARY(core STATIC ${files_core} ${files_math} ${files_input})
+# Renderinterface
+FILE(GLOB renderinterface_headers renderinterface/*.h)
+FILE(GLOB renderinterface_sources renderinterface/*.cpp)
+SET(files_renderinterface
+	${renderinterface_headers}
+	${renderinterface_sources})
+SOURCE_GROUP("renderinterface" FILES ${files_renderinterface})
+
+ADD_LIBRARY(core STATIC 
+			${files_core} 
+			${files_math} 
+			${files_input}
+			${files_renderinterface})
+
 ADD_DEPENDENCIES(core exts)
 TARGET_LINK_LIBRARIES(core PUBLIC engine exts)

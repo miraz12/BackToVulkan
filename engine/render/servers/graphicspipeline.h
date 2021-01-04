@@ -1,11 +1,11 @@
 #ifndef _GRAPHICS_PIPELINE_H_
 #define _GRAPHICS_PIPELINE_H_
 
-#include "shaderobject.h"
-#include "vulkaninstance.h"
-#include "graphicscomponent.h"
+#include "render/resources/shaderobject.h"
+#include "core/renderinterface/vulkaninstance.h"
+#include "render/properties/graphicscomponent.h"
 #include "core/math/matrix4D.h"
-#include "camera.h"
+#include "render/display/camera.h"
 
 namespace Render
 {

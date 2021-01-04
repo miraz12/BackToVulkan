@@ -6,7 +6,7 @@
 #include <algorithm>
 #include <fstream>
 
-#include "window.h"
+#include "render/display/window.h"
 
 const std::vector<const char*> validationLayers = 
 {

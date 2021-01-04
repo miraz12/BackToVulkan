@@ -1,5 +1,5 @@
 #include "keyhandler.h"
-#include "render/camera.h"
+#include "render/display/camera.h"
 #include "core/math/vector3D.h"
 namespace Input
 {

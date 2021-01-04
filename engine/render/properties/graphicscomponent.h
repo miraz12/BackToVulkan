@@ -4,7 +4,7 @@
 #include <array>
 #include <vulkan/vulkan.h>
 
-#include "meshresource.h"
+#include "render/resources/meshresource.h"
 #include "core/math/vector3D.h"
 #include "core/math/vector2D.h"
 

@@ -1,6 +1,6 @@
 #ifndef _KEY_HANDLER_H_
 #define _KEY_HANDLER_H_
-#include "render/window.h"
+#include "render/display/window.h"
 
 namespace Input
 {

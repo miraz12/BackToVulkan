@@ -1,5 +1,5 @@
 #include "graphicspipeline.h"
-#include "window.h"
+#include "render/display/window.h"
 
 #include <stdexcept>
 #include <chrono>
@@ -97,7 +97,6 @@ namespace Render
 	void GraphicsPipeline::RecreateSwapChain()
 	{
 		CleanupSwapChain();
-
 		CreateRenderPass();
 		CreateGraphicsPipeline();
 		CreateColorResources();
